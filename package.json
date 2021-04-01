@@ -62,7 +62,7 @@
     "config": "3.3.3",
     "cross-env": "6.0.3",
     "deasync": "0.1.21",
-    "eslint": "6.8.0",
+    "eslint": "7.23.0",
     "eslint-config-wpcalypso": "5.0.0",
     "eslint-plugin-jest": "23.20.0",
     "github-contributors-list": "https://github.com/woocommerce/github-contributors-list/tarball/master",
