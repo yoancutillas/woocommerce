@@ -54,7 +54,7 @@
     "@wordpress/babel-preset-default": "3.0.2",
     "@wordpress/e2e-test-utils": "^4.16.1",
     "@wordpress/eslint-plugin": "7.3.0",
-    "autoprefixer": "9.8.6",
+    "autoprefixer": "10.2.5",
     "babel-eslint": "10.1.0",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
