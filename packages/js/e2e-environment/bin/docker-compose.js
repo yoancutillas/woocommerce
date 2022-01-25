@@ -5,14 +5,16 @@ const program = require( 'commander' );
 const path = require( 'path' );
 const fs = require( 'fs' );
 const {
-	getAdminConfig,
 	getAppBase,
 	getAppRoot,
 	getAppName,
+} = require( '../utils' );
+const {
+	getAdminConfig,
 	getTestConfig,
 	resolveLocalE2ePath,
 	resolvePackagePath,
-} = require( '../utils' );
+} = require( '@woocommerce/e2e-utils/utils/test-config' );
 
 const dockerArgs = [];
 let command = '';
@@ -64,7 +66,7 @@ if ( appPath ) {
 		if ( fs.existsSync( appInitFile ) ) {
 			fs.copyFileSync(
 				appInitFile,
-				resolvePackagePath( 'docker/wp-cli/initialize.sh' )
+				resolvePackagePath( 'docker/wp-cli/initialize.sh', '@woocommerce/e2e-environment' )
 			);
 			console.log( 'Initializing ' + appInitFile );
 		}
@@ -91,7 +93,7 @@ if ( ! process.env.WORDPRESS_URL ) {
 }
 
 // Ensure that the first Docker compose file loaded is from our local env.
-dockerArgs.unshift( '-f', resolvePackagePath( 'docker-compose.yaml' ) );
+dockerArgs.unshift( '-f', resolvePackagePath( 'docker-compose.yaml', '@woocommerce/e2e-environment' ) );
 
 const dockerProcess = spawnSync( 'docker-compose', dockerArgs, {
 	stdio: 'inherit',
