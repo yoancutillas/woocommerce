@@ -75,7 +75,6 @@ jobs:
                 pnpm install
 
           - name: Run local k6 test
-            working-directory: package/woocommerce
             uses: k6io/action@v0.1
             with:
-              filename: plugins/woocommerce/tests/performance/tests/simple-all-shopper-requests.js
+              filename: package/woocommerce/plugins/woocommerce/tests/performance/tests/simple-all-shopper-requests.js
