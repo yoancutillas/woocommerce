@@ -28,7 +28,7 @@ jobs:
 
     k6-tests-run:
       name: k6 local test run - basic example
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-18.04
       needs: [build]
       steps:
           - name: Create dirs.
