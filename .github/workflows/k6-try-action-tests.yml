@@ -51,7 +51,7 @@ jobs:
 
           - name: Load docker images and start containers.
             working-directory: package/woocommerce/plugins/woocommerce
-            run: pnpx wc-e2e docker:up tests/e2e/docker/init-sample-products.sh
+            run: pnpx wc-e2e docker:up
 
           - name: Move current directory to code. We will install zip file in this dir later.
             run: mv ./package/woocommerce/plugins/woocommerce/* ./code/woocommerce
@@ -75,6 +75,7 @@ jobs:
                 pnpm install
 
           - name: Run local k6 test
+            working-directory: package/woocommerce
             uses: k6io/action@v0.1
             with:
               filename: plugins/woocommerce/tests/performance/tests/simple-all-shopper-requests.js
