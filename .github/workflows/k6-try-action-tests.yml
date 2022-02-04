@@ -74,13 +74,6 @@ jobs:
                 npm install -g pnpm
                 pnpm install
 
-          - name: Run tests command.
-            working-directory: package/woocommerce/plugins/woocommerce
-            env:
-                BASE_URL: http://localhost:8084
-                USER_KEY: admin
-                USER_SECRET: password
-
           - name: Run local k6 test
             uses: k6io/action@v0.1
             with:
