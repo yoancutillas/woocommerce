@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:    
+      - 'try/k6-github-action'
+
+jobs:
+  k6_local_test:
+    name: k6 local test run - basic example
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code.
+        uses: actions/checkout@v2
+        with:
+          path: package/woocommerce
+          ref: trunk
+
+      - name: Run local k6 test
+        uses: k6io/action@v0.1
+        with:
+          filename: plugins/woocommerce/tests/performance/tests/simple-all-shopper-requests.js
