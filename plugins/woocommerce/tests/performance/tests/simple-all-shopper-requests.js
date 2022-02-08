@@ -17,7 +17,7 @@ export let options = {
             vus: 1,
             iterations: 1,
             maxDuration: '10s',
-            exec: 'cartFlow',
+            exec: 'homePageFlow',
         },
         shopPageSmoke: {
             executor: 'per-vu-iterations',
