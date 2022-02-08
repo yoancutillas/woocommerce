@@ -1,10 +1,11 @@
 name: Smoke test daily
 on:
-  schedule:
-    - cron: '25 3 * * *'
+  push:
+    branches:
+      - 'try/use-pressable-for-smoke-tests'
 jobs:
   login-run:
-    name: Daily smoke test on trunk.
+    name: Testing alternative smoke test hosting.
     runs-on: ubuntu-18.04
     steps:
 
@@ -33,8 +34,8 @@ jobs:
       - name: Run smoke test.
         working-directory: package/woocommerce/plugins/woocommerce
         env:
-          SMOKE_TEST_URL: ${{ secrets.SMOKE_TEST_URL }}
-          SMOKE_TEST_ADMIN_USER: ${{ secrets.SMOKE_TEST_ADMIN_USER }}
+          SMOKE_TEST_URL: 'https://nightly-smoke-tests.mystagingwebsite.com/'
+          SMOKE_TEST_ADMIN_USER: '${{ secrets.SMOKE_TEST_ADMIN_USER }}'
           SMOKE_TEST_ADMIN_PASSWORD: ${{ secrets.SMOKE_TEST_ADMIN_PASSWORD }}
           SMOKE_TEST_ADMIN_USER_EMAIL: ${{ secrets.SMOKE_TEST_ADMIN_USER_EMAIL }}
           SMOKE_TEST_CUSTOMER_USER: ${{ secrets.SMOKE_TEST_CUSTOMER_USER }}
@@ -45,7 +46,7 @@ jobs:
           E2E_SLACK_CHANNEL: ${{ secrets.SMOKE_TEST_SLACK_CHANNEL }}
           UPDATE_WC: 1
           DEFAULT_TIMEOUT_OVERRIDE: 120000
-          BASE_URL: ${{ secrets.SMOKE_TEST_URL }}
+          BASE_URL: 'https://nightly-smoke-tests.mystagingwebsite.com/'
           USER_KEY: ${{ secrets.SMOKE_TEST_ADMIN_USER }}
           USER_SECRET: ${{ secrets.SMOKE_TEST_ADMIN_PASSWORD }}
         run: |
