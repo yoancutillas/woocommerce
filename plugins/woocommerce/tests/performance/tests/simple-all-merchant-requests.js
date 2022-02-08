@@ -16,6 +16,9 @@ export let options = {
             exec: 'allMerchantFlow',
         },
     },
+	thresholds: {
+		checks: [ 'rate==1' ],
+	},
 };
 
 // Use myAccountMerchantLogin() instead of wpLogin() if having issues with login.

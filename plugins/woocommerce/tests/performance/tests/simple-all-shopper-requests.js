@@ -76,6 +76,9 @@ export let options = {
             exec: 'cartFlow',
         },
     },
+	thresholds: {
+		checks: [ 'rate==1' ],
+	},
 };
 
 export function homePageFlow() {
