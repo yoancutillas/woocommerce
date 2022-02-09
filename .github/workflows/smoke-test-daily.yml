@@ -5,7 +5,7 @@ on:
       - 'try/use-pressable-for-smoke-tests'
 jobs:
   login-run:
-    name: Daily smoke test on trunk.
+    name: Daily smoke test on trunk
     runs-on: ubuntu-18.04
     steps:
 
