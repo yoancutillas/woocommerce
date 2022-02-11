@@ -6,6 +6,11 @@
 namespace Automattic\WooCommerce\Internal\DataStores\Orders;
 
 use Automattic\Jetpack\Constants;
+use Automattic\WooCommerce\DataBase\WPDBDriver;
+use Automattic\WooCommerce\DataBase\WPDBDriverConnection;
+use Doctrine\ORM\EntityManager;
+use Automattic\WooCommerce\Entity\OrderEntity;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,6 +18,15 @@ defined( 'ABSPATH' ) || exit;
  * This class is the standard data store to be used when the custom orders table is in use.
  */
 class OrdersTableDataStore implements \WC_Object_Data_Store_Interface, \WC_Order_Data_Store_Interface {
+
+	/**
+	 * @var EntityManager
+	 */
+	private $entity_manager;
+
+	public function init( EntityManager $em) {
+		$this->entity_manager = $em;
+	}
 
 	/**
 	 * Get the custom orders table name.
@@ -25,7 +39,6 @@ class OrdersTableDataStore implements \WC_Object_Data_Store_Interface, \WC_Order
 	}
 
 	public function read( &$order ) {
-
 	}
 
 	public function get_custom_order_id( $data ) {
@@ -187,25 +200,23 @@ class OrdersTableDataStore implements \WC_Object_Data_Store_Interface, \WC_Order
 		throw new \Exception( 'Unimplemented' );
 	}
 
-	public function query( $query_vars ) {
-		global $wpdb;
+	public function loadMetadata( ClassMetadata $metadata) {
+		return $metadata;
+	}
 
-		$limit = $query_vars['page_total'] ?? 10;
-		$offset = isset( $query_vars['page'] ) ? ( $query_vars['page'] - 1 ) * $limit : 0;
-		$query = $wpdb->prepare(
-			"
-SELECT id, post_id, status, date_created_gmt, total_amount, tax_amount
-FROM {$wpdb->prefix}wc_orders
-LIMIT %d
-OFFSET %d
-",
-			$limit,
-			$offset
-		);
-		$results = $wpdb->get_results( $query );
-		$orders = [];
+	public function query( $query_vars ) {
+		$qb = $this->entity_manager->createQueryBuilder();
+		$qb->select( array( 'o.id', 'o.status', 'o.date_created_gmt', 'o.total_amount', 'o.tax_amount' ) )
+			->from( OrderEntity::class, 'o' )
+			->where( 'o.total_amount > :total_amount_start' )->setParameter( 'total_amount_start', 1 )
+			->andWhere( 'o.total_amount < :total_amount_end' )->setParameter( 'total_amount_end', 1000 )
+			->setFirstResult( 0 )
+			->setMaxResults( 10 );
+
+		$query = $qb->getQuery();
+		$results = $query->getArrayResult();
 		foreach ( $results as $result ) {
-			$orders[] = \WC_Order_Factory::get_order( $result );
+			$orders[] = \WC_Order_Factory::get_order( (object) $result );
 		}
 		return array(
 			'orders' => $orders,

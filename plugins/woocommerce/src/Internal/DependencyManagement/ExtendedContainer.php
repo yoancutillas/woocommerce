@@ -8,6 +8,8 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement;
 use Automattic\WooCommerce\Utilities\StringUtil;
 use Automattic\WooCommerce\Vendor\League\Container\Container as BaseContainer;
 use Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\ORM\EntityManager;
 
 /**
  * This class extends the original League's Container object by adding some functionality
@@ -36,6 +38,8 @@ class ExtendedContainer extends BaseContainer {
 	 */
 	private $registration_whitelist = array(
 		\Psr\Container\ContainerInterface::class,
+		EntityManager::class,
+		Cache::class,
 	);
 
 	/**
