@@ -36,8 +36,8 @@ export function singleProduct() {
 		productPageTrend.add(response.timings.duration);
 		check(response, {
 			"is status 200": (r) => r.status === 200,
-			"body contains: product ID": (response) =>
-				response.body.includes(`id="product-${product_id}`),
+			"body contains: product SKU": (response) =>
+				response.body.includes(`class="sku">${product_sku}`),
 		});
 	});
 
