@@ -89,4 +89,4 @@ jobs:
       
           - name: Run local k6 test
             run: |
-              ./k6 run package/woocommerce/plugins/woocommerce/tests/performance/tests/simple-all-shopper-requests.js
+              ./k6 run package/woocommerce/plugins/woocommerce/tests/performance/tests/pr-gh-action-requests.js
