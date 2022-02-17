@@ -5,7 +5,7 @@ import { randomIntBetween } from "https://jslib.k6.io/k6-utils/1.1.0/index.js";
 import {
 	base_url,
 	product_url,
-	product_id,
+	product_sku,
 	think_time_min,
 	think_time_max,
 } from "../../config.js";
