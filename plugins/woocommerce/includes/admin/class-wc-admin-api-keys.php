@@ -34,6 +34,13 @@ class WC_Admin_API_Keys {
 			return false;
 		}
 
+		/**
+		 * Test hook
+		 *
+		 * @since 6.6.0
+		 */
+		do_action( 'woocommerce_test_hook' );
+
 		return $allow;
 	}
 
@@ -43,6 +50,12 @@ class WC_Admin_API_Keys {
 	 * @return bool
 	 */
 	private function is_api_keys_settings_page() {
+		/**
+		 * Test another hook 3
+		 *
+		 * @since 6.6.0
+		 */
+		do_action( 'woocommerce_test_hook_three' );
 		return isset( $_GET['page'], $_GET['tab'], $_GET['section'] ) && 'wc-settings' === $_GET['page'] && 'advanced' === $_GET['tab'] && 'keys' === $_GET['section']; // WPCS: input var okay, CSRF ok.
 	}
 

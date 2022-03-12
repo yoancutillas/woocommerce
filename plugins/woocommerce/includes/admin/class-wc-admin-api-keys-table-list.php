@@ -34,6 +34,13 @@ class WC_Admin_API_Keys_Table_List extends WP_List_Table {
 	 * No items found text.
 	 */
 	public function no_items() {
+		/**
+		 * Test another hook
+		 *
+		 * @since 6.6.0
+		 */
+		do_action( 'woocommerce_test_hook_two' );
+		
 		esc_html_e( 'No keys found.', 'woocommerce' );
 	}
 
