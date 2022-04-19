@@ -8,6 +8,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+use Automattic\WooCommerce\Internal\AddActions;
 use Automattic\WooCommerce\Internal\AssignDefaultCategory;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Internal\DownloadPermissionsAdjuster;
@@ -173,6 +174,7 @@ final class WooCommerce {
 		$this->define_tables();
 		$this->includes();
 		$this->init_hooks();
+		$this->add_actions();
 	}
 
 	/**
@@ -1013,5 +1015,16 @@ final class WooCommerce {
 	 */
 	public function get_instance_of( string $class_name, ...$args ) {
 		return wc_get_container()->get( LegacyProxy::class )->get_instance_of( $class_name, ...$args );
+	}
+
+	/**
+	 * Adds actions and their callbacks defined in src/actions.php.
+	 *
+	 * @return void
+	 */
+	private function add_actions() {
+		$actions = require_once dirname( WC_PLUGIN_FILE ) . '/src/actions.php';
+		$add_actions = new AddActions( $actions, wc_get_container() );
+		$add_actions->add_all();
 	}
 }
