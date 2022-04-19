@@ -140,7 +140,6 @@ class FeaturePlugin {
 		if ( Features::is_enabled( 'analytics' ) ) {
 			// Initialize Reports syncing.
 			ReportsSync::init();
-			CategoryLookup::instance()->init();
 
 			// Initialize Reports exporter.
 			ReportExporter::init();
