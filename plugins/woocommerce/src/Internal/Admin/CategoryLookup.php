@@ -27,13 +27,6 @@ class CategoryLookup {
 	protected static $instance = null;
 
 	/**
-	 * Constructor
-	 *
-	 * @return void
-	 */
-	protected function __construct() {}
-
-	/**
 	 * Get class instance.
 	 *
 	 * @return object Instance.
