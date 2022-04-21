@@ -64,7 +64,6 @@ class Loader {
 		Features::get_instance();
 		WCAdminSharedSettings::get_instance();
 		Translations::get_instance();
-		WCAdminUser::get_instance();
 		Settings::get_instance();
 
 		add_filter( 'admin_body_class', array( __CLASS__, 'add_admin_body_classes' ) );
