@@ -77,13 +77,6 @@ class Events {
 	}
 
 	/**
-	 * Cron event handlers.
-	 */
-	public function init() {
-		add_action( 'wc_admin_daily', array( $this, 'do_wc_admin_daily' ) );
-	}
-
-	/**
 	 * Daily events to run.
 	 *
 	 * Note: Order_Milestones::other_milestones is hooked to this as well.
