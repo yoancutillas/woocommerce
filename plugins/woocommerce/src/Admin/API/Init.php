@@ -42,8 +42,6 @@ class Init {
 	public function __construct() {
 		// Hook in data stores.
 		add_filter( 'woocommerce_data_stores', array( __CLASS__, 'add_data_stores' ) );
-		// REST API extensions init.
-		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
 		// Add currency symbol to orders endpoint response.
 		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( __CLASS__, 'add_currency_symbol_to_order_response' ) );

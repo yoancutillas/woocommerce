@@ -65,7 +65,6 @@ class Loader {
 		Features::get_instance();
 		WCAdminSharedSettings::get_instance();
 		Translations::get_instance();
-		WCAdminUser::get_instance();
 		Settings::get_instance();
 		SystemStatusReport::get_instance();
 

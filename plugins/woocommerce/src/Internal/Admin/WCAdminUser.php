@@ -15,13 +15,6 @@ class WCAdminUser {
 	protected static $instance = null;
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		add_action( 'rest_api_init', array( $this, 'register_user_data' ) );
-	}
-
-	/**
 	 * Get class instance.
 	 *
 	 * @return object Instance.

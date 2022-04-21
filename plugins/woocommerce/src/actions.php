@@ -1,7 +1,9 @@
 <?php
 
+use Automattic\WooCommerce\Admin\API\Init;
 use Automattic\WooCommerce\Internal\Admin\CategoryLookup;
 use Automattic\WooCommerce\Internal\Admin\Events;
+use Automattic\WooCommerce\Internal\Admin\WCAdminUser;
 
 return array(
 	'edit_product_cat'               => array(
@@ -21,5 +23,9 @@ return array(
 	),
 	'init'                           => array(
 		array( CategoryLookup::class, 'define_category_lookup_tables_in_wpdb' ),
+	),
+	'rest_api_init'                  => array(
+		array( WCAdminUser::class, 'register_user_data' ),
+		array( Init::class, 'rest_api_init' ),
 	),
 );
