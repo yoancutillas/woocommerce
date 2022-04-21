@@ -3,8 +3,12 @@
 namespace Automattic\WooCommerce\Admin;
 
 use Automattic\WooCommerce\Internal\Admin\CategoryLookup;
+use Automattic\WooCommerce\Internal\Admin\Events;
 use Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider;
 
+/**
+ * Admin Provider.
+ */
 class AdminProvider extends AbstractServiceProvider {
 
 	/**
@@ -14,6 +18,7 @@ class AdminProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = array(
 		CategoryLookup::class,
+		Events::class,
 	);
 
 	/**
@@ -25,5 +30,6 @@ class AdminProvider extends AbstractServiceProvider {
 	 */
 	public function register() {
 		$this->share( CategoryLookup::class );
+		$this->share( Events::class );
 	}
 }

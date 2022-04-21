@@ -8,7 +8,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Automattic\WooCommerce\Internal\AddActions;
+use Automattic\WooCommerce\Internal\ActionRegistry;
 use Automattic\WooCommerce\Internal\AssignDefaultCategory;
 use Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
