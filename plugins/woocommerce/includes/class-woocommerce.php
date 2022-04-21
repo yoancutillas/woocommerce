@@ -8,7 +8,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Automattic\WooCommerce\Internal\ActionRegistry;
+use Automattic\WooCommerce\Internal\HookRegistry;
 use Automattic\WooCommerce\Internal\AssignDefaultCategory;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Internal\DownloadPermissionsAdjuster;
@@ -1024,7 +1024,7 @@ final class WooCommerce {
 	 */
 	private function add_actions() {
 		$actions = require_once dirname( WC_PLUGIN_FILE ) . '/src/actions.php';
-		$add_actions = new ActionRegistry( $actions, wc_get_container() );
-		$add_actions->add_all();
+		$filters = require_once dirname( WC_PLUGIN_FILE ) . '/src/filters.php';
+		new HookRegistry( $actions, $filters, wc_get_container() );
 	}
 }
