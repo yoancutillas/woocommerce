@@ -10,3 +10,4 @@ import './connect';
 import './tax';
 import './woocommerce-payments';
 import './purchase';
+import './ProductsImport';
