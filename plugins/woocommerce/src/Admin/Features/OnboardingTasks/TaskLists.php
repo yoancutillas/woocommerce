@@ -104,6 +104,11 @@ class TaskLists {
 	 * Initialize default lists.
 	 */
 	public static function init_default_lists() {
+		$onboarding_data   = get_option( 'woocommerce_onboarding_profile' );
+		$selling_elsewhere = ( isset( $onboarding_data['selling_venues'] )
+								&& 'no' !== $onboarding_data['selling_venues'] );
+		$product_task_name = $selling_elsewhere ? 'ProductsImport' : 'Products';
+
 		self::add_list(
 			array(
 				'id'           => 'setup',
@@ -111,7 +116,7 @@ class TaskLists {
 				'tasks'        => array(
 					'StoreDetails',
 					'Purchase',
-					'Products',
+					$product_task_name,
 					'WooCommercePayments',
 					'Payments',
 					'Tax',
@@ -132,7 +137,7 @@ class TaskLists {
 				'title'                   => __( 'Get ready to start selling', 'woocommerce' ),
 				'tasks'                   => array(
 					'StoreDetails',
-					'Products',
+					$product_task_name,
 					'WooCommercePayments',
 					'Payments',
 					'Tax',
@@ -151,13 +156,13 @@ class TaskLists {
 
 		self::add_list(
 			array(
-				'id'           => 'setup_experiment_2',
-				'hidden_id'    => 'setup',
-				'title'        => __( 'Get ready to start selling', 'woocommerce' ),
-				'tasks'        => array(
+				'id'                      => 'setup_experiment_2',
+				'hidden_id'               => 'setup',
+				'title'                   => __( 'Get ready to start selling', 'woocommerce' ),
+				'tasks'                   => array(
 					'StoreCreation',
 					'StoreDetails',
-					'Products',
+					$product_task_name,
 					'WooCommercePayments',
 					'Payments',
 					'Tax',
@@ -165,14 +170,14 @@ class TaskLists {
 					'Marketing',
 					'Appearance',
 				),
-				'event_prefix' => 'tasklist_',
-				'visible'      => self::is_experiment_treatment( 'woocommerce_tasklist_setup_experiment_2' )
+				'event_prefix'            => 'tasklist_',
+				'visible'                 => self::is_experiment_treatment( 'woocommerce_tasklist_setup_experiment_2' )
 					&& ! self::is_experiment_treatment( 'woocommerce_tasklist_setup_experiment_1' ),
-				'options'      => array(
+				'options'                 => array(
 					'use_completed_title' => true,
 				),
 				'display_progress_header' => true,
-				'sections'     => array(
+				'sections'                => array(
 					array(
 						'id'          => 'basics',
 						'title'       => __( 'Cover the basics', 'woocommerce' ),
