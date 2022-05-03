@@ -54,7 +54,14 @@ class HookRegistry {
 
 				$this->callbacks[ $callback_key ] = function() use ( $callback ) {
 					$class_instance = $this->container->get( $callback[0] );
-					call_user_func_array( array( $class_instance, $callback[1] ), func_get_args() );
+					if ($class_instance instanceof ActionListener) {
+						$callback_func_name = "on_action";
+					} else if ($class_instance instanceof  FilterListener) {
+						$callback_func_name = "on_filter";
+					} else {
+						$callback_func_name = $callback[1];
+					}
+					call_user_func_array( array( $class_instance, $callback_func_name ), func_get_args() );
 				};
 				$func_name(
 					$action_name,

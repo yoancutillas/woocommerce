@@ -5,12 +5,14 @@
 
 namespace Automattic\WooCommerce\Internal\Admin;
 
+use Automattic\WooCommerce\Internal\ActionListener;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * \Automattic\WooCommerce\Internal\Admin\CategoryLookup class.
  */
-class CategoryLookup {
+class CategoryLookup implements ActionListener {
 
 	/**
 	 * Stores changes to categories we need to sync.
@@ -286,6 +288,20 @@ class CategoryLookup {
 		foreach ( $tables as $name => $table ) {
 			$wpdb->$name    = $wpdb->prefix . $table;
 			$wpdb->tables[] = $table;
+		}
+	}
+
+	public function on_action( string $action_name, array $args ) {
+
+		switch ($action_name) {
+			case 'edit_product_cat':
+				call_user_func_array( array( $this, 'before_edit' ), $args);
+				break;
+			case 'generate_category_lookup_table':
+				call_user_func_array( array( $this, 'regenerate' ), $args);
+				break;
+			default:
+				break;
 		}
 	}
 }
