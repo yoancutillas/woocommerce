@@ -7,7 +7,7 @@ use Automattic\WooCommerce\Internal\Admin\WCAdminUser;
 
 return array(
 	'edit_product_cat'               => array(
-		array( CategoryLookup::class, 'before_edit', 99 ),
+		array( CategoryLookup::class, 99 ),
 	),
 	'generate_category_lookup_table' => array(
 		array( CategoryLookup::class, 'regenerate' ),
