@@ -50,7 +50,7 @@ function WC() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.Fu
 /**
  * Test hook
  *
- * @since 6.7.0
+ * @since 6.5.0
  */
 do_action( 'woocommerce_test_hook' );
 
