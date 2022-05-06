@@ -5,14 +5,14 @@
 
 namespace Automattic\WooCommerce\Internal\Admin;
 
-use Automattic\WooCommerce\Internal\ActionListener;
+use Automattic\WooCommerce\Internal\HookRegistry\HandleActions;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * \Automattic\WooCommerce\Internal\Admin\CategoryLookup class.
  */
-class CategoryLookup implements ActionListener {
+class CategoryLookup implements HandleActions {
 
 	/**
 	 * Stores changes to categories we need to sync.

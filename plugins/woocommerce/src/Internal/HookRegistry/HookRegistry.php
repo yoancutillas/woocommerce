@@ -1,7 +1,9 @@
 <?php
 
-namespace Automattic\WooCommerce\Internal;
+namespace Automattic\WooCommerce\Internal\HookRegistry;
 
+use Automattic\WooCommerce\Internal\HookRegistry\HandleActions;
+use Automattic\WooCommerce\Internal\HookRegistry\HandleFilters;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -17,7 +19,9 @@ class HookRegistry {
 
 
 	/**
-	 * Callbacks.
+	 * We'll save hook callbacks here with the following array key pattern to make it removeable later.
+	 *
+	 * {action|filter}{hook_name}{callback_class}{callback_method}
 	 *
 	 * @var array $callbacks Callbacks
 	 */
@@ -50,19 +54,36 @@ class HookRegistry {
 		foreach ( $items as $action_name => $callbacks ) {
 			// and register action's callbacks.
 			foreach ( $callbacks as $callback ) {
-				$callback_key = $type . $action_name . $callback[0] . $callback[1];
+				// Class + Method config
+				if ( is_array( $callback ) ) {
+					$callback_key = $type . $action_name . $callback[0] . $callback[1];
+					$this->callbacks[$callback_key] = function() use ($callback) {
+						$class_instance = $this->container->get( $callback[0] );
+						call_user_func_array(array($class_instance, $callback[1]), func_get_args());
+					};
 
-				$this->callbacks[ $callback_key ] = function() use ( $callback ) {
-					$class_instance = $this->container->get( $callback[0] );
-					if ($class_instance instanceof ActionListener) {
-						$callback_func_name = "on_action";
-					} else if ($class_instance instanceof  FilterListener) {
-						$callback_func_name = "on_filter";
-					} else {
-						$callback_func_name = $callback[1];
-					}
-					call_user_func_array( array( $class_instance, $callback_func_name ), func_get_args() );
-				};
+				} else { // global function or a class that implements HandleActions or HandleFilters
+					$callback_key = $type.$action_name.$callback;
+					$this->callbacks[$callback_key] = function() use ($callback) {
+
+						if (function_exists($callback)) {
+							call_user_func_array($callback, func_get_args());
+						} else {
+							$class_instance = $this->container->get( $callback );
+							if ( $class_instance instanceof HandleActions) {
+								$callback_func_name = "on_action";
+							} else if ( $class_instance instanceof HandleFilters) {
+								$callback_func_name = "on_filter";
+							} else {
+								// error
+								throw new \Exception("Callback must implement HandleActions or HandleFilters interface.");
+							}
+							call_user_func_array( array( $class_instance, $callback_func_name ), func_get_args() );
+						}
+
+					};
+				}
+
 				$func_name(
 					$action_name,
 					$this->callbacks[ $callback_key ],
