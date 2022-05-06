@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce
  * Plugin URI: https://woocommerce.com/
  * Description: An eCommerce toolkit that helps you sell anything. Beautifully.
- * Version: 6.6.0-dev
+ * Version: 6.4.0-dev
  * Author: Automattic
  * Author URI: https://woocommerce.com
  * Text Domain: woocommerce
@@ -46,6 +46,13 @@ $GLOBALS['wc_container'] = new Automattic\WooCommerce\Container();
 function WC() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	return WooCommerce::instance();
 }
+
+/**
+ * Test hook
+ *
+ * @since 6.7.0
+ */
+do_action( 'woocommerce_test_hook' );
 
 /**
  * Returns the WooCommerce PSR11-compatible object container.
