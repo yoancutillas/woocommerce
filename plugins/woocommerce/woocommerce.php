@@ -48,13 +48,6 @@ function WC() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.Fu
 }
 
 /**
- * Test hook
- *
- * @since 6.5.0
- */
-do_action( 'woocommerce_test_hook' );
-
-/**
  * Returns the WooCommerce PSR11-compatible object container.
  * Code in the `includes` directory should use the container to get instances of classes in the `src` directory.
  *

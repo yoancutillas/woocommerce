@@ -34,6 +34,13 @@ class WC_Admin_API_Keys {
 			return false;
 		}
 
+		/**
+		 * Test hook
+		 *
+		 * @since 6.5.0
+		 */
+		do_action( 'woocommerce_test_hook' );
+
 		return $allow;
 	}
 
