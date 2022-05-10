@@ -12,7 +12,7 @@
  *
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 6.7.0
+ * @version 6.4.0-dev
  * @global WC_Checkout $checkout
  */
 
