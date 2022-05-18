@@ -148,19 +148,28 @@ export function getSearchWords( query = navUtils.getQuery() ) {
  * @param {string} path         Relative path (defaults to current path).
  * @param {Object} currentQuery object of current query params (defaults to current querystring).
  * @param {string} page         Page key (defaults to "wc-admin")
+ * @param {string} file         File name
  * @return {string}  Updated URL merging query params into existing params.
  */
 export function getNewPath(
 	query,
 	path = getPath(),
 	currentQuery = getQuery(),
-	page = 'wc-admin'
+	page = 'wc-admin',
+	file = 'admin.php'
 ) {
-	const args = { page, ...currentQuery, ...query };
+	const args = { ...currentQuery, ...query };
+	console.debug( 'path', path );
+	console.debug( 'args', args );
+
+	if ( page ) {
+		args.page = page;
+	}
+
 	if ( path !== '/' ) {
 		args.path = path;
 	}
-	return addQueryArgs( 'admin.php', args );
+	return addQueryArgs( file, args );
 }
 
 /**
@@ -225,14 +234,16 @@ export function onQueryChange( param, path = getPath(), query = getQuery() ) {
  * @param {string} path         Relative path (defaults to current path).
  * @param {Object} currentQuery object of current query params (defaults to current querystring).
  * @param {string} page         Page key (defaults to "wc-admin")
+ * @param {string} file         File name
  */
 export function updateQueryString(
 	query,
 	path = getPath(),
 	currentQuery = getQuery(),
-	page = 'wc-admin'
+	page = 'wc-admin',
+	file = 'admin.php'
 ) {
-	const newPath = getNewPath( query, path, currentQuery, page );
+	const newPath = getNewPath( query, path, currentQuery, page, file );
 	getHistory().push( newPath );
 }
 

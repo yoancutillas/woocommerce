@@ -145,7 +145,10 @@ class _Layout extends Component {
 		const { isEmbedded, ...restProps } = this.props;
 		const { location, page } = this.props;
 		const { breadcrumbs } = page;
-		const query = this.getQuery( location && location.search );
+		const query = this.getQuery(
+			location ? location.search : window.location.search
+		);
+		console.debug( 'layout query', query );
 
 		return (
 			<SlotFillProvider>
@@ -270,12 +273,21 @@ export const PageLayout = compose(
 )( _PageLayout );
 
 const _EmbedLayout = () => (
-	<Layout
-		page={ {
-			breadcrumbs: getAdminSetting( 'embedBreadcrumbs', [] ),
-		} }
-		isEmbedded
-	/>
+	<Router history={ getHistory() }>
+		<Route
+			key="/"
+			path="/"
+			exact
+			render={ () => (
+				<Layout
+					page={ {
+						breadcrumbs: getAdminSetting( 'embedBreadcrumbs', [] ),
+					} }
+					isEmbedded
+				/>
+			) }
+		/>
+	</Router>
 );
 
 export const EmbedLayout = compose(

@@ -6,6 +6,7 @@ import {
 	getHistory,
 	getNewPath,
 	updateQueryString,
+	getFile,
 } from '@woocommerce/navigation';
 import {
 	ONBOARDING_STORE_NAME,
@@ -130,6 +131,7 @@ export const TaskListItem: React.FC< TaskListItemProps > = ( {
 	};
 
 	const onClickDefault = useCallback( () => {
+		console.debug( 'onClickDefault' );
 		if ( actionUrl ) {
 			if ( actionUrl.startsWith( 'http' ) ) {
 				window.location.href = actionUrl;
@@ -142,7 +144,13 @@ export const TaskListItem: React.FC< TaskListItemProps > = ( {
 		}
 
 		window.document.documentElement.scrollTop = 0;
-		updateQueryString( { task: id } );
+		updateQueryString(
+			{ task: id },
+			undefined,
+			undefined,
+			null,
+			getFile()
+		);
 	}, [ id, isComplete, actionUrl ] );
 
 	const taskItemProps = {
