@@ -1,12 +1,13 @@
 /**
  * External dependencies
  */
-import * as coreParagraph from '@wordpress/block-library/build-module/paragraph';
+import { __experimentalGetCoreBlocks as getAllBlocks } from '@wordpress/block-library';
 import {
 	getBlockTypes,
 	registerBlockType,
 	setDefaultBlockName,
 } from '@wordpress/blocks';
+// import * as coreParagraph from '@wordpress/block-library/build-module/paragraph';
 // import * as coreCode from '@wordpress/block-library/build-module/code';
 // import * as coreHeading from '@wordpress/block-library/build-module/heading';
 // import * as coreHtml from '@wordpress/block-library/build-module/html';
@@ -14,7 +15,11 @@ import {
 // import * as coreQuote from '@wordpress/block-library/build-module/quote';
 // import * as coreSeparator from '@wordpress/block-library/build-module/separator';
 
-console.debug( 'coreParagraph' );
+const allBlocks = getAllBlocks();
+const paragraphBlock = allBlocks.filter(
+	( block ) => block.name === 'core/paragraph'
+)[ 0 ];
+
 // import { addFilter } from '@wordpress/hooks';
 
 // const registrationFilter = ( settings: BlockInstance, name: string ) => {
@@ -58,7 +63,7 @@ export const blockIsRegistered = ( blockName ) => {
 const registerCoreBlocks = () => {
 	// Gutenberg's registerCoreBlocks brings in many blocks we don't need.
 	// This just registers the minimum blocks we need for Day One.
-	[].forEach( ( block ) => {
+	[ paragraphBlock ].forEach( ( block ) => {
 		if ( ! blockIsRegistered( block.name ) ) {
 			registerBlockType(
 				{
@@ -70,5 +75,5 @@ const registerCoreBlocks = () => {
 		}
 	} );
 
-	setDefaultBlockName( 'blah' );
+	setDefaultBlockName( paragraphBlock.name );
 };

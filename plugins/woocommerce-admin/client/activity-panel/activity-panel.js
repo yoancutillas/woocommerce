@@ -56,6 +56,12 @@ const SetupTasksPanel = lazy( () =>
 	)
 );
 
+const ProductSidebarPanel = lazy( () =>
+	import(
+		/* webpackChunkName: "activity-panels-setup" */ './panels/product-sidebar/product-sidebar-panel.js'
+	)
+);
+
 export const ActivityPanel = ( { isEmbedded, query } ) => {
 	const [ currentTab, setCurrentTab ] = useState( '' );
 	const [ isPanelClosing, setIsPanelClosing ] = useState( false );
@@ -224,6 +230,10 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 		return query.page === 'wc-admin' && ! query.path;
 	};
 
+	const isProducts = () => {
+		return query.page === 'wc-admin' && query.path === '/products';
+	};
+
 	const isPerformingSetupTask = () => {
 		return (
 			query.task &&
@@ -242,7 +252,9 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 			icon: <IconFlag />,
 			unread: hasUnreadNotes || hasAbbreviatedNotifications,
 			visible:
-				( isEmbedded || ! isHomescreen() ) && ! isPerformingSetupTask(),
+				( isEmbedded || ! isHomescreen() ) &&
+				! isPerformingSetupTask() &&
+				! isProducts(),
 		};
 
 		const setup = {
@@ -261,7 +273,15 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 				! requestingTaskListOptions &&
 				! setupTaskListComplete &&
 				! setupTaskListHidden &&
-				! isHomescreen(),
+				! isHomescreen() &&
+				! isProducts(),
+		};
+
+		const productsSidebar = {
+			name: 'productsSidebar',
+			title: __( 'Sidebar', 'woocommerce' ),
+			icon: <Icon icon={ helpIcon } />,
+			visible: isProducts(),
 		};
 
 		const help = {
@@ -271,7 +291,8 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 			visible:
 				currentUserCan( 'manage_woocommerce' ) &&
 				( ( isHomescreen() && ! isEmbedded ) ||
-					isPerformingSetupTask() ),
+					isPerformingSetupTask() ) &&
+				! isProducts(),
 		};
 
 		const displayOptions = {
@@ -319,6 +340,7 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 			previewStore,
 			displayOptions,
 			help,
+			productsSidebar,
 		].filter( ( tab ) => tab.visible );
 	};
 
@@ -339,6 +361,8 @@ export const ActivityPanel = ( { isEmbedded, query } ) => {
 				return <HelpPanel taskName={ task } />;
 			case 'setup':
 				return <SetupTasksPanel query={ query } />;
+			case 'productsSidebar':
+				return <ProductSidebarPanel />;
 			default:
 				return null;
 		}

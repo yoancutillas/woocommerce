@@ -57,6 +57,7 @@
 		"@automattic/explat-client": "^0.0.3",
 		"@automattic/explat-client-react-helpers": "^0.0.4",
 		"@automattic/interpolate-components": "^1.2.0",
+		"@automattic/isolated-block-editor": "^2.15.0",
 		"@react-spring/web": "^9.4.3",
 		"@woocommerce/api": "^0.2.0",
 		"@woocommerce/e2e-environment": "^0.3.0",

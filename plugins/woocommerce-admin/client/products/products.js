@@ -2,44 +2,28 @@
  * External dependencies
  */
 
-import { Card, CardBody, TabPanel, TextControl } from '@wordpress/components';
+import { Card, CardBody, TextControl } from '@wordpress/components';
 import { TextControlWithAffixes, Pill } from '@woocommerce/components';
 import { Icon, check } from '@wordpress/icons';
 import { useState } from '@wordpress/element';
+import { BlockPreview } from '@wordpress/block-editor';
+import IsolatedBlockEditor from '@automattic/isolated-block-editor';
 
 /**
  * Internal dependencies
  */
-import './products.scss';
 import { ProductsSection } from './index';
-import { Editor } from './Editor';
 
-console.debug( 'products screen' );
+import './products.scss';
+import '@automattic/isolated-block-editor/build-browser/core.css';
+
+console.debug( 'BlockPreview', BlockPreview );
 
 export const ManageProducts = () => {
 	const [ blocks, updateBlocks ] = useState( [] );
 
 	return (
 		<>
-			<nav>
-				<TabPanel
-					className="my-tab-panel"
-					tabs={ [
-						{
-							name: 'tab1',
-							title: 'Tab 1 title',
-							className: 'tab-one',
-						},
-						{
-							name: 'tab2',
-							title: 'Tab 2 title',
-							className: 'tab-two',
-						},
-					] }
-				>
-					{ ( tab ) => <p>Selected tab: { tab.title }</p> }
-				</TabPanel>
-			</nav>
 			<section className="woo-products">
 				<ProductsSection
 					title="Images"
@@ -78,8 +62,12 @@ export const ManageProducts = () => {
 										console.debug( 'affixChange' )
 									}
 								/>
-								<Pill>Menswear > Tops, Polos and whatever</Pill>
+								<Pill>Menswear > Tops, Polos and whatever</Pill>{ ' ' }
 								<Pill>Menswear > Shirts</Pill>
+								{ /* <BlockPreview
+									viewportWidth={ 100 }
+									blocks={ blocks }
+								/> */ }
 							</CardBody>
 						</Card>
 					</>
@@ -88,7 +76,16 @@ export const ManageProducts = () => {
 					title="Product Description"
 					description="Testing Gutenberg editor"
 				>
-					<Editor blocks={ blocks } />
+					<IsolatedBlockEditor
+						settings={ {} }
+						onSaveBlocks={ ( blocks ) => {
+							updateBlocks( blocks );
+						} }
+						onLoad={ ( parse ) =>
+							console.debug( 'load content', parse )
+						}
+						onError={ ( e ) => console.error( e ) }
+					/>
 				</ProductsSection>
 			</section>
 		</>

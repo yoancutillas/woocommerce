@@ -23,9 +23,7 @@ import { registerBlocks } from './registerBlocks';
 // import { registerFormatTypes } from './formats/register-format-types';
 // import { registerCompleters } from './autocomplete';
 
-console.debug( 'registerBlocks', registerBlocks );
-
-//registerBlocks();
+registerBlocks();
 // registerFormatTypes();
 
 export const Editor = ( { blocks, onChange, entryId } ) => {
@@ -42,7 +40,7 @@ export const Editor = ( { blocks, onChange, entryId } ) => {
 		<>
 			<BlockEditorProvider
 				value={ blocksRef.current }
-				settings={ { bodyPlaceholder: '', hasFixedToolbar: true } }
+				settings={ { bodyPlaceholder: '', hasFixedToolbar: false } }
 			>
 				{ /* <FixedFormattingToolbar /> */ }
 				{ /* <ContextToolbar /> */ }
