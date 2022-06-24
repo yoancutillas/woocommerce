@@ -43,3 +43,12 @@ jobs:
           DEFAULT_TIMEOUT_OVERRIDE: 120000
         run: |
           pnpx wc-e2e test:e2e tests/e2e/specs/smoke-tests/update-woocommerce.js
+        continue-on-error: true
+
+      - name: Install k6
+        run: |
+            curl https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+
+      - name: Run k6 tests
+        run: |
+            ./k6 run plugins/woocommerce/tests/performance/tests/gh-action-pr-requests.js
