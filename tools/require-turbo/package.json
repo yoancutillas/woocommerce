@@ -4,6 +4,9 @@
 	"description": "A tool for checking that package scripts are run through Turborepo",
 	"private": true,
 	"main": "index.js",
+	"bin": {
+		"require-turbo": "./index.js"
+	},
 	"author": "Automattic",
 	"license": "GPL-2.0-only",
 	"engines": {

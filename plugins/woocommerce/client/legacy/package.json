@@ -6,8 +6,8 @@
 	"private": true,
 	"main": "Gruntfile.js",
 	"scripts": {
-		"build": "node ./node_modules/require-turbo && grunt assets",
-		"lint": "node ./node_modules/require-turbo && grunt eslint stylelint --force"
+		"build": "require-turbo && grunt assets",
+		"lint": "require-turbo && grunt eslint stylelint --force"
 	},
 	"devDependencies": {
 		"@woocommerce/require-turbo": "workspace:*",

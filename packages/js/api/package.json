@@ -30,11 +30,11 @@
 		"changelog": "composer exec -- changelogger",
 		"clean": "rm -rf ./dist ./tsconfig.tsbuildinfo",
 		"compile": "tsc -b",
-		"build": "node ./node_modules/require-turbo && pnpm run clean && npm run compile",
+		"build": "require-turbo && pnpm run clean && npm run compile",
 		"prepack": "pnpm run build",
-		"lint": "node ./node_modules/require-turbo && eslint src",
+		"lint": "require-turbo && eslint src",
 		"lint:fix": "eslint src --fix",
-		"test": "node ./node_modules/require-turbo && jest"
+		"test": "require-turbo && jest"
 	},
 	"dependencies": {
 		"axios": "^0.24.0",

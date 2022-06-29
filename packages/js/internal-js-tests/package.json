@@ -17,11 +17,11 @@
 	"main": "build/util/index.js",
 	"module": "build-module/util/index.js",
 	"scripts": {
-		"build": "node ./node_modules/require-turbo && tsc --build ./tsconfig.json ./tsconfig-cjs.json",
+		"build": "require-turbo && tsc --build ./tsconfig.json ./tsconfig-cjs.json",
 		"ts:check": "tsc --noEmit --project ./tsconfig.json",
 		"clean": "pnpm exec rimraf *.tsbuildinfo build build-*",
 		"prepack": "pnpm run clean && pnpm run build",
-		"lint": "node ./node_modules/require-turbo && eslint src",
+		"lint": "require-turbo && eslint src",
 		"lint:fix": "eslint src --fix"
 	},
 	"dependencies": {
