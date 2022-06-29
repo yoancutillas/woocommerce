@@ -32,8 +32,8 @@
 	},
 	"devDependencies": {
 		"@woocommerce/eslint-plugin": "workspace:*",
-		"eslint": "^8.12.0",
-		"require-turbo": "workspace:*"
+		"@woocommerce/require-turbo": "workspace:*",
+		"eslint": "^8.12.0"
 	},
 	"publishConfig": {
 		"access": "public"

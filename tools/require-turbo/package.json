@@ -1,7 +1,8 @@
 {
-	"name": "require-turbo",
+	"name": "@woocommerce/require-turbo",
 	"version": "0.0.0",
 	"description": "A tool for checking that package scripts are run through Turborepo",
+	"private": true,
 	"main": "index.js",
 	"author": "Automattic",
 	"license": "GPL-2.0-only",
