@@ -81,6 +81,7 @@ jobs:
                   retention-days: 5
                          
             - name: Update Performance Test Site with E2E test
+              if: always()
               working-directory: plugins/woocommerce
               env:
                 SMOKE_TEST_URL: ${{ secrets.SMOKE_TEST_PERF_URL }}/
