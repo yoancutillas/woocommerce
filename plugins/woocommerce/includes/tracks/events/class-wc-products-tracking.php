@@ -179,7 +179,7 @@ class WC_Products_Tracking {
 						upsells:				$( '#upsell_ids option' ).length ? 'Yes' : 'No',
 						weight:					$( '#_weight' ).val() ? 'Yes' : 'No',
 					};
-					window.wcTracks.recordEvent( 'product_update', properties );
+					window.wcTracks.recordEvent( 'product_update_test_two', properties );
 				} );
 			}
 			"
@@ -229,7 +229,7 @@ class WC_Products_Tracking {
 			'weight'            => $product->get_weight() ? 'yes' : 'no',
 		);
 
-		WC_Tracks::record_event( 'product_add_publish', $properties );
+		WC_Tracks::record_event( 'product_add_publish_test_two', $properties );
 	}
 
 	/**
