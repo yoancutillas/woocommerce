@@ -1,3 +1,7 @@
+---
+sidebar_label: Introduction
+---
+
 # WooCommerce Admin
 
 -   [CSS Structure](stylesheets.md)
@@ -6,4 +10,4 @@
 -   [Features](features/)
 -   [Layout](layout.md)
 -   [Page Controller](page-controller.md)
--   [woocommerce.com](woocommerce.com/)
+-   [woocommerce.com](woocommerce-com/)
