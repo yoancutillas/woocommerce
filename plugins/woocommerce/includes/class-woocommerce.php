@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
 use Automattic\WooCommerce\Internal\AssignDefaultCategory;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Internal\DownloadPermissionsAdjuster;
+use Automattic\WooCommerce\Internal\HookRegistry\HookRegistry;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Register as ProductDownloadDirectories;
@@ -174,6 +175,7 @@ final class WooCommerce {
 		$this->define_tables();
 		$this->includes();
 		$this->init_hooks();
+		$this->register_hooks();
 	}
 
 	/**
@@ -1046,5 +1048,16 @@ final class WooCommerce {
 	 */
 	public function get_global( string $global_name ) {
 		return wc_get_container()->get( LegacyProxy::class )->get_global( $global_name );
+	}
+
+	/**
+	 * Adds actions and their callbacks defined in src/actions.php.
+	 *
+	 * @return void
+	 */
+	private function register_hooks() {
+		$actions = require_once dirname( WC_PLUGIN_FILE ) . '/src/actions.php';
+		$filters = require_once dirname( WC_PLUGIN_FILE ) . '/src/filters.php';
+		new HookRegistry( $actions, $filters, wc_get_container() );
 	}
 }

@@ -5,6 +5,7 @@
 
 namespace Automattic\WooCommerce;
 
+use Automattic\WooCommerce\Admin\Providers\AdminProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider;
@@ -53,6 +54,7 @@ final class Container implements \Psr\Container\ContainerInterface {
 		RestockRefundedItemsAdjusterServiceProvider::class,
 		UtilsClassesServiceProvider::class,
 		COTMigrationServiceProvider::class,
+		AdminProvider::class,
 	);
 
 	/**
