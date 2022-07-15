@@ -4,6 +4,7 @@
 import { compose } from '@wordpress/compose';
 import { withDispatch, withSelect } from '@wordpress/data';
 import { OPTIONS_STORE_NAME } from '@woocommerce/data';
+import { Fill, SlotFillProvider } from '@wordpress/components';
 import PropTypes from 'prop-types';
 
 /**
@@ -12,6 +13,12 @@ import PropTypes from 'prop-types';
 import CustomerEffortScoreTracks from './customer-effort-score-tracks';
 import { STORE_KEY, QUEUE_OPTION_NAME } from './data/constants';
 import './data';
+
+const ExampleFill = () => (
+	<Fill name={ 'woocommerce_header_item' }>
+		<div>slotted</div>
+	</Fill>
+);
 
 /**
  * Maps the queue of CES tracks surveys to CustomerEffortScoreTracks
@@ -45,6 +52,7 @@ function CustomerEffortScoreTracksContainer( {
 
 	return (
 		<>
+			{ <ExampleFill /> }
 			{ queueForPage.map( ( item, index ) => (
 				<CustomerEffortScoreTracks
 					key={ index }

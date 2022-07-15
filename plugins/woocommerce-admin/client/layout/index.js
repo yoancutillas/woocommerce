@@ -28,6 +28,8 @@ import { recordPageView } from '@woocommerce/tracks';
 import '@woocommerce/notices';
 import { PluginArea } from '@wordpress/plugins';
 
+import { Fill } from '@wordpress/components';
+
 /**
  * Internal dependencies
  */
@@ -123,7 +125,11 @@ const LayoutSwitchWrapper = ( props ) => {
 		</WithReactRouterProps>
 	);
 };
-
+const ExampleFill3 = () => (
+	<Fill name={ 'woocommerce_header_item' }>
+		<div>slotted3</div>
+	</Fill>
+);
 class _Layout extends Component {
 	memoizedLayoutContext = memoize( ( page ) =>
 		LayoutContextPrototype.getExtendedContext(
@@ -220,6 +226,7 @@ class _Layout extends Component {
 				value={ this.memoizedLayoutContext( page ) }
 			>
 				<SlotFillProvider>
+					<ExampleFill3 />
 					<div className="woocommerce-layout">
 						<Header
 							sections={

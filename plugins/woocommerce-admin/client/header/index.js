@@ -7,7 +7,7 @@ import classnames from 'classnames';
 import { decodeEntities } from '@wordpress/html-entities';
 import { getSetting } from '@woocommerce/settings';
 import { Text, useSlot } from '@woocommerce/experimental';
-
+import { Fill } from '@wordpress/components';
 /**
  * Internal dependencies
  */
@@ -22,6 +22,11 @@ import { TasksReminderBar, useActiveSetupTasklist } from '../tasks';
 
 export const PAGE_TITLE_FILTER = 'woocommerce_admin_header_page_title';
 
+const ExampleFill2 = () => (
+	<Fill name={ 'woocommerce_header_item' }>
+		<div>slotted2</div>
+	</Fill>
+);
 export const Header = ( { sections, isEmbedded = false, query } ) => {
 	const headerElement = useRef( null );
 	const activeSetupList = useActiveSetupTasklist();
@@ -95,14 +100,17 @@ export const Header = ( { sections, isEmbedded = false, query } ) => {
 	}, [ isEmbedded, sections, siteTitle ] );
 
 	return (
-		<div className={ className } ref={ headerElement }>
-			{ activeSetupList && (
-				<TasksReminderBar
-					updateBodyMargin={ updateBodyMargin }
-					taskListId={ activeSetupList }
-				/>
-			) }
-			<div className="woocommerce-layout__header-wrapper">
+		<>
+			<ExampleFill2 />
+
+			<div className={ className } ref={ headerElement }>
+				{ activeSetupList && (
+					<TasksReminderBar
+						updateBodyMargin={ updateBodyMargin }
+						taskListId={ activeSetupList }
+					/>
+				) }
+				<div className="woocommerce-layout__header-wrapper">
 				<WooHeaderNavigationItem.Slot
 					fillProps={ { isEmbedded, query } }
 				/>
@@ -110,20 +118,21 @@ export const Header = ( { sections, isEmbedded = false, query } ) => {
 				<Text
 					className={ `woocommerce-layout__header-heading` }
 					as="h1"
-				>
-					{ decodeEntities(
-						hasPageTitleFills ? (
-							<WooHeaderPageTitle.Slot
-								fillProps={ { isEmbedded, query } }
-							/>
-						) : (
-							pageTitle
-						)
-					) }
-				</Text>
+					>
+						{ decodeEntities(
+							hasPageTitleFills ? (
+								<WooHeaderPageTitle.Slot
+									fillProps={ { isEmbedded, query } }
+								/>
+							) : (
+								pageTitle
+							)
+						) }
+					</Text>
 
-				<WooHeaderItem.Slot fillProps={ { isEmbedded, query } } />
+					<WooHeaderItem.Slot fillProps={ { isEmbedded, query } } />
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };

@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /**
  * External dependencies
  */
@@ -336,4 +338,21 @@ const ProductTour = () => {
 
 const root = document.createElement( 'div' );
 root.setAttribute( 'id', 'product-tour-root' );
-render( <ProductTour />, document.body.appendChild( root ) );
+// render( <ProductTour />, document.body.appendChild( root ) );
+
+import { registerPlugin } from '@wordpress/plugins';
+
+import { Fill, SlotFillProvider } from '@wordpress/components';
+
+const ExampleFill = () => (
+	<SlotFillProvider>
+		<Fill name={ 'woocommerce_header_item' }>
+			<div>slotted</div>
+		</Fill>
+	</SlotFillProvider>
+);
+
+registerPlugin( 'example-fill-3', {
+	render: ExampleFill,
+	scope: 'woocommerce-admin',
+} );
