@@ -35,7 +35,9 @@
 		"start": "tsc --build --watch",
 		"prepack": "pnpm run clean && pnpm run build",
 		"lint": "node ./node_modules/require-turbo && eslint src",
-		"lint:fix": "eslint src --fix"
+		"lint:fix": "eslint src --fix",
+		"test": "node ./node_modules/require-turbo && jest --config ./jest.config.json",
+		"test-staged": "jest --bail --config ./jest.config.json --findRelatedTests"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.17.5",
@@ -51,7 +53,8 @@
 	},
 	"lint-staged": {
 		"*.(t|j)s?(x)": [
-			"pnpm lint:fix"
+			"pnpm lint:fix",
+			"pnpm test-staged"
 		]
 	}
 }
