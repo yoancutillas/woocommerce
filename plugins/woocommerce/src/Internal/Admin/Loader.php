@@ -64,7 +64,7 @@ class Loader {
 	 */
 	public function __construct() {
 		Features::get_instance();
-		WCAdminSharedSettings::get_instance();
+		is_admin() && WCAdminSharedSettings::get_instance();
 		Translations::get_instance();
 		WCAdminUser::get_instance();
 		Settings::get_instance();
