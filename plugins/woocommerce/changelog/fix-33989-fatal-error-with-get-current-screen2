@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Only init WCAdminSharedSettings for admin requests/pages
