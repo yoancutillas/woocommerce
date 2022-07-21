@@ -166,6 +166,10 @@ export function recordPageView(
 	}
 
 	recordEvent( 'page_view', { path, ...extraProperties } );
+	recordEvent( 'badEventName', {
+		'bad prop name': 'value',
+		'another-bad-prop': 'value',
+	} );
 
 	// Process queue.
 	tracksQueue.process();
