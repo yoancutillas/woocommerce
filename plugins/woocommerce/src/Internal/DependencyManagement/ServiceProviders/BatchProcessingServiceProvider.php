@@ -32,6 +32,13 @@ class BatchProcessingServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register() {
+		try {
+			new BatchProcessingController();
+		} catch ( Exception $e) {
+			$logger = wc_get_logger();
+			$logger->error( $e->getMessage(), array( 'source' => 'AbstractServiceProvider::register' ) );
+
+		}
 		$this->share( BatchProcessingController::class, new BatchProcessingController() );
 	}
 }
