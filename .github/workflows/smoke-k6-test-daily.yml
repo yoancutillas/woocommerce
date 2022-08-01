@@ -1,0 +1,82 @@
+name: Smoke k6 test daily
+on: push
+
+jobs:
+    k6-tests-run:
+        name: Runs k6 Performance tests
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: trunk
+            - uses: ./.github/actions/cache-deps
+              with:
+                  workflow_name: pr-build-and-e2e-tests
+                  workflow_cache: ${{ secrets.WORKFLOW_CACHE }}
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+
+            - name: Install and Build
+              uses: ./.github/actions/install-build
+
+            - name: Workaround to use initialization file with prepopulated data.
+              working-directory: plugins/woocommerce/tests/e2e/docker
+              run: |
+                  cp init-sample-products.sh initialize.sh
+
+            - name: Load docker images and start containers.
+              working-directory: plugins/woocommerce
+              run: pnpm exec wc-e2e docker:up
+
+            - name: Install k6
+              run: |
+                  curl https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+
+            - name: Run k6 tests
+              run: |
+                  ./k6 run plugins/woocommerce/tests/performance/tests/gh-action-pr-requests.js
+
+    test-wp-version:
+        name: k6 Smoke test on L-${{ matrix.wp }} WordPress version
+        runs-on: ubuntu-20.04
+        strategy:
+            matrix:
+                wp: ['1', '2']
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: trunk
+            - uses: ./.github/actions/cache-deps
+              with:
+                  workflow_name: pr-build-and-e2e-tests
+                  workflow_cache: ${{ secrets.WORKFLOW_CACHE }}
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+
+            - name: Install and Build
+              uses: ./.github/actions/install-build
+
+            - name: Workaround to use initialization file with prepopulated data.
+              working-directory: plugins/woocommerce/tests/e2e/docker
+              run: |
+                  cp init-sample-products.sh initialize.sh
+
+            - name: Load docker images and start containers.
+              working-directory: plugins/woocommerce
+              env:
+                  LATEST_WP_VERSION_MINUS: ${{ matrix.wp }}
+              run: pnpm exec wc-e2e docker:up
+
+            - name: Install k6
+              run: |
+                  curl https://github.com/grafana/k6/releases/download/v0.33.0/k6-v0.33.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+
+            - name: Run k6 tests
+              run: |
+                  ./k6 run plugins/woocommerce/tests/performance/tests/gh-action-pr-requests.js
