@@ -44,7 +44,7 @@ jobs:
         runs-on: ubuntu-20.04
         strategy:
             matrix:
-                wp: ['1', '2']
+                wp: ['2']
         steps:
             - uses: actions/checkout@v3
               with:
