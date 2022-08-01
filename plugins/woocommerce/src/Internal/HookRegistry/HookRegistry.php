@@ -2,8 +2,6 @@
 
 namespace Automattic\WooCommerce\Internal\HookRegistry;
 
-use Automattic\WooCommerce\Internal\HookRegistry\HandleActions;
-use Automattic\WooCommerce\Internal\HookRegistry\HandleFilters;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -30,15 +28,48 @@ class HookRegistry {
 	/**
 	 * Construct.
 	 *
-	 * @param array              $actions array of actions and callbacks.
-	 * @param array              $filters array of filters and callbacks.
 	 * @param ContainerInterface $container system container.
 	 */
-	public function __construct( array $actions, array $filters, ContainerInterface $container ) {
+	public function __construct(ContainerInterface $container )
+	{
 		$this->container = $container;
-		$this->register( $actions, 'action' );
-		$this->register( $filters, 'filter' );
 	}
+
+	public function add_action_with_function($action_name, $func_name, ?string $id = null)
+	{
+		$id = $id ?? "action-func-{$func_name}";
+		$this->callbacks[$id] = function() use ($func_name) {
+			call_user_func_array($func_name, func_get_args());
+		};
+
+		return add_action($action_name, $this->callbacks[$id]);
+	}
+
+	public function add_action_with_method($action_name, $classname, $method_name, ?string $id = null)
+	{
+		$id = $id ?? "action-method-{$classname}-{$method_name}";
+		$this->callbacks[$id] = function() use($classname, $method_name) {
+			$class_instance = $this->container->get( $classname );
+			call_user_func_array(array($class_instance, $method_name), func_get_args());
+		};
+
+		return add_action($action_name, $this->callbacks[$id]);
+	}
+
+	/**
+	 * Registers an action callback that implements HandleActions interface.
+	 * @return void
+	 */
+	public function add_action_with_handler(string $action_name, string $action_handler_classname, ?string $id = null)
+	{
+		$callback = function() use ($action_handler_classname) {
+			$class_instance = $this->container->get( $action_handler_classname );
+			call_user_func_array( array( $class_instance, 'on' ), func_get_args() );
+		};
+
+		add_action($action_name, $callback);
+	}
+
 
 	/**
 	 * Add actiosn.
