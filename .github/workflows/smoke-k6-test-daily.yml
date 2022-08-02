@@ -43,8 +43,9 @@ jobs:
         name: k6 Smoke test on L-${{ matrix.wp }} WordPress version
         runs-on: ubuntu-20.04
         strategy:
+            fail-fast: false
             matrix:
-                wp: ['2']
+                wp: ['1', '2']
         steps:
             - uses: actions/checkout@v3
               with:

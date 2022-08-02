@@ -5,12 +5,12 @@ if [[ $1 ]]; then
 # Set environment variables for Docker
 #
 	if ! [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+ ]]; then
-		WP_VERSION=$(./bin/get-latest-docker-tag.js wordpress 5 2> /dev/null)
+		WP_VERSION=$(./bin/get-latest-docker-tag.js wordpress 6 2> /dev/null)
 	fi
 	if [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+ ]]; then
 		export WORDPRESS_VERSION=$WP_VERSION
 	else
-		export WORDPRESS_VERSION="5.9"
+		export WORDPRESS_VERSION="6.0"
 	fi
 
 	if [[ $LATEST_WP_VERSION_MINUS ]]; then
