@@ -88,7 +88,7 @@ class OrdersTableDataStoreTests extends WC_Unit_Test_Case {
 
 		$post_data             = get_post( $post_order_id, ARRAY_A );
 		$post_meta_data        = get_post_meta( $post_order_id );
-		$exempted_keys         = array( 'post_modified', 'post_modified_gmt' );
+		$exempted_keys         = array();
 		$convert_to_float_keys = array(
 			'_cart_discount_tax',
 			'_order_shipping',
