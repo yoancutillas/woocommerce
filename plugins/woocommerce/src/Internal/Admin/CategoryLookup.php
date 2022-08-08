@@ -26,12 +26,6 @@ class CategoryLookup {
 	 */
 	protected static $instance = null;
 
-	/**
-	 * Constructor
-	 *
-	 * @return void
-	 */
-	protected function __construct() {}
 
 	/**
 	 * Get class instance.
@@ -43,17 +37,6 @@ class CategoryLookup {
 			static::$instance = new static();
 		}
 		return static::$instance;
-	}
-
-	/**
-	 * Init hooks.
-	 */
-	public function init() {
-		add_action( 'generate_category_lookup_table', array( $this, 'regenerate' ) );
-		add_action( 'edit_product_cat', array( $this, 'before_edit' ), 99 );
-		add_action( 'edited_product_cat', array( $this, 'on_edit' ), 99 );
-		add_action( 'created_product_cat', array( $this, 'on_create' ), 99 );
-		add_action( 'init', array( $this, 'define_category_lookup_tables_in_wpdb' ) );
 	}
 
 	/**
@@ -103,6 +86,7 @@ class CategoryLookup {
 	public function before_edit( $category_id ) {
 		$category                                  = get_term( $category_id, 'product_cat' );
 		$this->edited_product_cats[ $category_id ] = $category->parent;
+		write_log( $category_id );
 	}
 
 	/**
