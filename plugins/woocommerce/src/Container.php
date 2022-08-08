@@ -5,6 +5,7 @@
 
 namespace Automattic\WooCommerce;
 
+use Automattic\WooCommerce\Admin\AdminProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider;
@@ -59,6 +60,7 @@ final class Container {
 		ObjectCacheServiceProvider::class,
 		BatchProcessingServiceProvider::class,
 		OrderMetaBoxServiceProvider::class,
+		AdminProvider::class,
 	);
 
 	/**
