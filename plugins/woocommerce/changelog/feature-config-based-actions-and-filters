@@ -1,0 +1,4 @@
+Significance: minor
+Type: add
+
+Add config based actions and filters registration.
