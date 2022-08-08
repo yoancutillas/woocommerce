@@ -2,6 +2,8 @@
 
 namespace Automattic\WooCommerce\Internal\HookRegistry;
 
+use Automattic\WooCommerce\Internal\HookRegistry\HandleActions;
+use Automattic\WooCommerce\Internal\HookRegistry\HandleFilters;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -28,6 +30,7 @@ class HookRegistry {
 	/**
 	 * Construct.
 	 *
+<<<<<<< HEAD
 	 * @param ContainerInterface $container system container.
 	 */
 	public function __construct(ContainerInterface $container )
@@ -70,6 +73,17 @@ class HookRegistry {
 		add_action($action_name, $callback);
 	}
 
+
+=======
+	 * @param array              $actions array of actions and callbacks.
+	 * @param array              $filters array of filters and callbacks.
+	 * @param ContainerInterface $container system container.
+	 */
+	public function __construct( array $actions, array $filters, ContainerInterface $container ) {
+		$this->container = $container;
+		$this->register( $actions, 'action' );
+		$this->register( $filters, 'filter' );
+	}
 
 	/**
 	 * Add actiosn.
