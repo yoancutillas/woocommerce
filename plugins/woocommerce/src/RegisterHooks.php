@@ -39,16 +39,19 @@ class RegisterHooks {
 	 */
 	public function __construct( HookRegistry $hook_registry ) {
 		$this->hook_registry = $hook_registry;
-		$this->load_action_configs();
+		$this->load_configs( $this->action_config_files, 'action' );
+		$this->load_configs( $this->action_config_files, 'filter' );
 	}
 
 	/**
 	 * Load an action config and register the actions.
 	 *
 	 * @param string $filepath filepath for a config.
+	 * @param string $type action or filter.
 	 * @return void
 	 */
-	public function load_action_config( string $filepath ) {
+	public function load_config( string $filepath, string $type ) {
+		$method_prefix = $type === 'action' ? 'add_action' : 'add_filter';
 		foreach ( require $filepath as $action_name => $callbacks ) {
 
 			foreach ( $callbacks as $callback ) {
@@ -58,9 +61,9 @@ class RegisterHooks {
 				$callable      = $callback[0];
 
 				if ( is_string( $callable ) ) {
-					$this->hook_registry->add_action_with_function( $action_name, $callable, $priority, $accpeted_args );
+					$this->hook_registry->{$method_prefix . '_with_function'}( $action_name, $callable, $priority, $accpeted_args );
 				} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
-					$this->hook_registry->add_action_with_method(
+					$this->hook_registry->{$method_prefix . 'add_action_with_method'}(
 						$action_name,
 						$callable[0],
 						$callable[1],
@@ -75,11 +78,13 @@ class RegisterHooks {
 	/**
 	 * Load config files for actions.
 	 *
+	 * @param array  $files list of config files to load.
+	 * @param string $type action or filter.
 	 * @return void
 	 */
-	private function load_action_configs() {
-		foreach ( $this->action_config_files as $action_config_file ) {
-			$this->load_action_config( $action_config_file );
+	private function load_configs( array $files, string $type ) {
+		foreach ( $files as $file ) {
+			$this->load_config( $file, $type );
 		}
 	}
 }
