@@ -3,6 +3,7 @@
 namespace Automattic\WooCommerce;
 
 use Automattic\WooCommerce\Internal\HookRegistry;
+use InvalidArgumentException;
 
 /**
  * A service class to load action/filter config files and register actions/filters via HookRegistry.
@@ -48,29 +49,25 @@ class RegisterHooks {
 	 *
 	 * @param string $filepath filepath for a config.
 	 * @param string $type action or filter.
+	 * @throws InvalidArgumentException When a callback has invalid definition.
 	 * @return void
 	 */
-	public function load_config( string $filepath, string $type ) {
+	public function load_config( string $filepath, string $type ): void {
 		$method_prefix = $type === 'action' ? 'add_action' : 'add_filter';
 		foreach ( require $filepath as $action_name => $callbacks ) {
 
-			foreach ( $callbacks as $callback ) {
+			foreach ( $callbacks as $callback_index => $callback ) {
 
 				$priority      = $callback[1] ?? 1;
 				$accpeted_args = $callback[2] ?? 1;
 				$callable      = $callback[0];
+				$id            = $callback[3] ?? null;
 
-				if ( is_string( $callable ) ) {
-					$this->hook_registry->{$method_prefix . '_with_function'}( $action_name, $callable, $priority, $accpeted_args );
-				} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
-					$this->hook_registry->{$method_prefix . 'add_action_with_method'}(
-						$action_name,
-						$callable[0],
-						$callable[1],
-						$priority,
-						$accpeted_args
-					);
+				if ( ! is_string( $callable ) && ! ( is_array( $callable ) && count( $callable ) === 2 ) ) {
+					throw new InvalidArgumentException( "Invalid callback definition for {$action_name}[{$callback_index}]." );
 				}
+
+				$this->hook_registry->$method_prefix( $action_name, $callable, $priority, $accpeted_args, $id );
 			}
 		}
 	}

@@ -35,6 +35,80 @@ class HookRegistry {
 	}
 
 	/**
+	 * Add an action or a filter
+	 *
+	 * @param string       $hook_name The name of the hook to add the callback to.
+	 * @param string|array $callable The callback to be run when the action is called. It can be a global function name or
+	 *                      [classname, method] array.
+	 * @param string       $type action or filter.
+	 * @param int          $priority Used to specify the order in which the functions associated with a particular action are executed.
+	 * @param int          $accepted_args  The number of arguments the function accepts.
+	 * @param string|null  $id an optional I.D. This can be used to remove an action later.
+	 *
+	 * @return bool
+	 */
+	private function add( string $hook_name, $callable, string $type, int $priority = 10, int $accepted_args = 1, ?string $id = null ):bool {
+
+		if ( is_string( $callable ) ) {
+			$id                     = $id ?? "{$type}-func-{$callable}";
+			$this->callbacks[ $id ] = function() use ( $callable ) {
+				call_user_func_array( $callable, func_get_args() );
+			};
+
+		} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
+			$id                     = $id ?? "{$type}-method-{$callable[0]}-{$callable[1]}";
+			$this->callbacks[ $id ] = function() use ( $callable ) {
+				list($classname, $method_name) = $callable;
+				$class_instance                = $this->container->get( $classname );
+				$callback                      = function( $args ) use ( $method_name ) {
+					call_user_func_array( array( $this, $method_name ), $args );
+				};
+				// this allows us to call private methods without reflection.
+				// works for php 7+.
+				$callback->call( $class_instance, func_get_args() );
+			};
+		} else {
+			return false;
+		}
+
+		$func_name = $type === 'action' ? 'add_action' : 'add_filter';
+
+		return $func_name( $hook_name, $this->callbacks[ $id ], $priority, $accepted_args );
+	}
+
+	/**
+	 * Add an action
+	 *
+	 * @param string       $action_name The name of the action to add the callback to.
+	 * @param string|array $callable The callback to be run when the action is called. It can be a global function name or
+	 *                      [classname, method] array.
+	 * @param int          $priority Used to specify the order in which the functions associated with a particular action are executed.
+	 * @param int          $accepted_args The number of arguments the function accepts.
+	 * @param string|null  $id an optional I.D. This can be used to remove an action later.
+	 *
+	 * @return bool
+	 */
+	public function add_action( $action_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
+		return $this->add( $action_name, $callable, 'action', $priority, $accepted_args, $id );
+	}
+
+	/**
+	 * Add a filter
+	 *
+	 * @param string       $filter_name The name of the filter to add the callback to.
+	 * @param string|array $callable The callback to be run when the action is called. It can be a global function name or
+	 *                      [classname, method] array.
+	 * @param int          $priority Used to specify the order in which the functions associated with a particular action are executed.
+	 * @param int          $accepted_args The number of arguments the function accepts.
+	 * @param string|null  $id an optional I.D. This can be used to remove an action later.
+	 *
+	 * @return bool
+	 */
+	public function add_filter( $filter_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
+		return $this->add( $filter_name, $callable, 'filter', $priority, $accepted_args, $id );
+	}
+
+	/**
 	 * Remove an action by an I.D
 	 *
 	 * @param string $action_name The action hook to which the function to be removed is hooked.
@@ -43,7 +117,7 @@ class HookRegistry {
 	 * @return bool
 	 */
 	public function remove_action_by_id( string $action_name, string $id ): bool {
-		return $this->remove_by_id($action_name, $id, 'action');
+		return $this->remove_by_id( $action_name, $id, 'action' );
 	}
 
 	/**
@@ -55,83 +129,8 @@ class HookRegistry {
 	 * @return bool
 	 */
 	public function remove_action( string $action_name, $callable ): bool {
-		return $this->remove($action_name, $callable, 'action');
+		return $this->remove( $action_name, $callable, 'action' );
 	}
-
-	/**
-	 * Add a filter with a global function.
-	 *
-	 * @param string      $filter_name action name.
-	 * @param string      $func_name function name.
-	 * @param int         $priority (Optional) Used to specify the order in which the functions associated with a particular action are executed.
-	 * @param int         $accepted_args (Optional) The number of arguments the function accepts.
-	 * @param string|null $id (Optional) An I.D that can be used to remove the callback later.
-	 *
-	 * @return bool
-	 */
-	public function add_filter_with_function( string $filter_name, string $func_name, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
-		$id                     = $id ?? "filter-func-{$func_name}";
-		$this->callbacks[ $id ] = function() use ( $func_name ) {
-			call_user_func_array( $func_name, func_get_args() );
-		};
-
-		return add_filter( $filter_name, $this->callbacks[ $id ], $priority, $accepted_args );
-	}
-
-	/**
-	 * Add a filter with a method in a class.
-	 *
-	 * @param string      $filter_name action name.
-	 * @param string      $classname class name.
-	 * @param string      $method_name method name.
-	 * @param int         $priority (Optional) Used to specify the order in which the functions associated with a particular action are executed.
-	 * @param int         $accepted_args (Optional) The number of arguments the function accepts.
-	 * @param string|null $id (Optional) An I.D that can be used to remove the callback later.
-	 *
-	 * @return bool
-	 */
-	public function add_filter_with_method( string $filter_name, string $classname, string $method_name, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
-		$id                     = $id ?? "filter-method-{$classname}-{$method_name}";
-		$this->callbacks[ $id ] = function() use ( $classname, $method_name ) {
-			$class_instance = $this->container->get( $classname );
-			$callback       = function( $args ) use ( $method_name ) {
-				call_user_func_array( array( $this, $method_name ), $args );
-			};
-			// this allows us to call private methods without reflection.
-			// works for php 7+.
-			$callback->call( $class_instance, func_get_args() );
-		};
-
-		return add_filter( $filter_name, $this->callbacks[ $id ], $priority, $accepted_args );
-	}
-
-	public function add_action($action_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null)
-	{
-	    if (is_string($callable)) {
-			$id = "action-func-{$callable}";
-			$this->callbacks[ $id ] = function() use ( $callable ) {
-				call_user_func_array( $callable, func_get_args() );
-			};
-
-		} else if (is_array($callable) && count($callable) === 2) {
-			$id = "action-method-{$callable[0]}-{$callable[1]}";
-			$this->callbacks[ $id ] = function() use ( $callable ) {
-				list($classname, $method_name) = $callable;
-				$class_instance = $this->container->get( $classname );
-				$callback       = function( $args ) use ( $method_name ) {
-					call_user_func_array( array( $this, $method_name ), $args );
-				};
-				// this allows us to call private methods without reflection.
-				// works for php 7+.
-				$callback->call( $class_instance, func_get_args() );
-			};
-		} else {
-			return false;
-		}
-
-		return add_action($action_name, $this->callbacks[$id], $priority, $accepted_args);
-	}
-
 
 	/**
 	 * Remove an action by an I.D
@@ -142,7 +141,7 @@ class HookRegistry {
 	 * @return bool
 	 */
 	public function remove_filter_by_id( string $filter_name, string $id ): bool {
-		return $this->remove_by_id($filter_name, $id, 'filter');
+		return $this->remove_by_id( $filter_name, $id, 'filter' );
 	}
 
 	/**
@@ -154,10 +153,19 @@ class HookRegistry {
 	 * @return bool
 	 */
 	public function remove_filter( string $filter_name, $callable ): bool {
-		return $this->remove($filter_name, $callable, 'filter');
+		return $this->remove( $filter_name, $callable, 'filter' );
 	}
 
-	private function remove_by_id($hook_name, string $id, $type): bool {
+	/**
+	 * Remove an action or a filter by an I.D
+	 *
+	 * @param string $hook_name The name of the hook to add the callback to.
+	 * @param string $id I.D of the hook to remove.
+	 * @param string $type action or filter.
+	 *
+	 * @return bool
+	 */
+	private function remove_by_id( $hook_name, string $id, $type ): bool {
 		if ( ! isset( $this->callbacks[ $id ] ) ) {
 			return false;
 		}
@@ -166,7 +174,17 @@ class HookRegistry {
 		return $func_name( $hook_name, $this->callbacks[ $id ] );
 	}
 
-	private function remove($hook_name, $callable, $type): bool {
+	/**
+	 * Remove an action or a filter
+	 *
+	 * @param string       $hook_name The name of the hook to add the callback to.
+	 * @param string|array $callable The callback to be run when the action is called. It can be a global function name or
+	 *                      [classname, method] array.
+	 * @param string       $type action or filter.
+	 *
+	 * @return bool
+	 */
+	private function remove( $hook_name, $callable, $type ): bool {
 		if ( is_string( $callable ) ) {
 			$id = "{$type}-func-{$callable}";
 		} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
@@ -183,5 +201,4 @@ class HookRegistry {
 
 		return $func_name( $hook_name, $this->callbacks[ $id ] );
 	}
-
 }
