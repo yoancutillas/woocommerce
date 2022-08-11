@@ -31,7 +31,9 @@ class RegisterHooks {
 	 *
 	 * @var array
 	 */
-	private $filter_config_files = array();
+	private $filter_config_files = array(
+		__DIR__ . '/filters.php',
+	);
 
 	/**
 	 * Constructor.
