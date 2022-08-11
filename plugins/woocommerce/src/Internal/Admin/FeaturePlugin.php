@@ -25,6 +25,7 @@ use Automattic\WooCommerce\Admin\PluginsHelper;
 use Automattic\WooCommerce\Admin\PluginsInstaller;
 use Automattic\WooCommerce\Admin\ReportExporter;
 use Automattic\WooCommerce\Admin\ReportsSync;
+use Automattic\WooCommerce\Admin\Products\Products;
 use Automattic\WooCommerce\Internal\Admin\CategoryLookup;
 use Automattic\WooCommerce\Internal\Admin\Events;
 use Automattic\WooCommerce\Internal\Admin\Onboarding\Onboarding;
@@ -161,6 +162,10 @@ class FeaturePlugin {
 
 		if ( Features::is_enabled( 'onboarding' ) ) {
 			Onboarding::init();
+		}
+
+		if ( Features::is_enabled( 'new-product-management-experience' ) ) {
+			Products::init();
 		}
 
 		if ( Features::is_enabled( 'analytics' ) ) {
