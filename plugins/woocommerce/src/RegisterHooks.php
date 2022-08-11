@@ -41,7 +41,7 @@ class RegisterHooks {
 	public function __construct( HookRegistry $hook_registry ) {
 		$this->hook_registry = $hook_registry;
 		$this->load_configs( $this->action_config_files, 'action' );
-		$this->load_configs( $this->action_config_files, 'filter' );
+		$this->load_configs( $this->filter_config_files, 'filter' );
 	}
 
 	/**
@@ -52,7 +52,7 @@ class RegisterHooks {
 	 * @throws InvalidArgumentException When a callback has invalid definition.
 	 * @return void
 	 */
-	public function load_config( string $filepath, string $type ): void {
+	private function load_config( string $filepath, string $type ): void {
 		$method_prefix = $type === 'action' ? 'add_action' : 'add_filter';
 		foreach ( require $filepath as $action_name => $callbacks ) {
 
