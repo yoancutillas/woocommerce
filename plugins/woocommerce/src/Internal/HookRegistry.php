@@ -52,7 +52,7 @@ class HookRegistry {
 		if ( is_string( $callable ) ) {
 			$id                     = $id ?? "{$type}-func-{$callable}";
 			$this->callbacks[ $id ] = function() use ( $callable ) {
-				call_user_func_array( $callable, func_get_args() );
+				return call_user_func_array( $callable, func_get_args() );
 			};
 
 		} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
@@ -61,11 +61,11 @@ class HookRegistry {
 				list($classname, $method_name) = $callable;
 				$class_instance                = $this->container->get( $classname );
 				$callback                      = function( $args ) use ( $method_name ) {
-					call_user_func_array( array( $this, $method_name ), $args );
+					return call_user_func_array( array( $this, $method_name ), $args );
 				};
 				// this allows us to call private methods without reflection.
 				// works for php 7+.
-				$callback->call( $class_instance, func_get_args() );
+				return $callback->call( $class_instance, func_get_args() );
 			};
 		} else {
 			return false;
@@ -88,7 +88,7 @@ class HookRegistry {
 	 *
 	 * @return bool
 	 */
-	public function add_action( $action_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
+	public function add_action( string $action_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
 		return $this->add( $action_name, $callable, 'action', $priority, $accepted_args, $id );
 	}
 
@@ -104,7 +104,7 @@ class HookRegistry {
 	 *
 	 * @return bool
 	 */
-	public function add_filter( $filter_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
+	public function add_filter( string $filter_name, $callable, int $priority = 10, int $accepted_args = 1, ?string $id = null ): bool {
 		return $this->add( $filter_name, $callable, 'filter', $priority, $accepted_args, $id );
 	}
 
@@ -165,7 +165,7 @@ class HookRegistry {
 	 *
 	 * @return bool
 	 */
-	private function remove_by_id( $hook_name, string $id, $type ): bool {
+	private function remove_by_id( string $hook_name, string $id, string $type ): bool {
 		if ( ! isset( $this->callbacks[ $id ] ) ) {
 			return false;
 		}
@@ -184,7 +184,7 @@ class HookRegistry {
 	 *
 	 * @return bool
 	 */
-	private function remove( $hook_name, $callable, $type ): bool {
+	private function remove( string $hook_name, $callable, string $type ): bool {
 		if ( is_string( $callable ) ) {
 			$id = "{$type}-func-{$callable}";
 		} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
