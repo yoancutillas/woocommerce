@@ -28,6 +28,7 @@
 	"dependencies": {
 		"@automattic/calypso-color-schemes": "^2.1.1",
 		"@automattic/interpolate-components": "^1.2.0",
+		"@automattic/isolated-block-editor": "^2.17.0",
 		"@automattic/tour-kit": "^1.1.1",
 		"@woocommerce/csv-export": "workspace:*",
 		"@woocommerce/currency": "workspace:*",
@@ -95,9 +96,9 @@
 		"@testing-library/jest-dom": "^5.16.2",
 		"@testing-library/react": "^12.1.3",
 		"@testing-library/user-event": "^13.5.0",
+		"@types/react": "^17.0.0",
 		"@types/wordpress__components": "^19.10.1",
 		"@types/wordpress__viewport": "^2.5.4",
-		"@types/react": "^17.0.0",
 		"@woocommerce/eslint-plugin": "workspace:*",
 		"@woocommerce/internal-style-build": "workspace:*",
 		"@wordpress/browserslist-config": "^4.1.1",
