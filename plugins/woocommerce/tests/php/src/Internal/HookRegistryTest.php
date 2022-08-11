@@ -5,9 +5,12 @@ namespace Automattic\WooCommerce\Tests\Internal;
 use Automattic\WooCommerce\Container;
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\HookRegistry;
+use ReflectionException;
 
+/**
+ * HookRegistryTest
+ */
 class HookRegistryTest extends \WC_Unit_Test_Case {
-
 	/**
 	 * @var HookRegistry $hook_registry
 	 */
@@ -19,15 +22,18 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 	private $extended_container;
 
 
+	/**
+	 * Set up.
+	 *
+	 * @return void
+	 */
 	public function setUp(): void {
 		$container = new Container();
 
-		$reflection = new \ReflectionClass( $container );
-		$extended   = $reflection->getProperty( 'container' );
+		$extended = ( new \ReflectionClass( $container ) )->getProperty( 'container' );
 		$extended->setAccessible( true );
-		$extended = $extended->getValue( $container );
 
-		$this->extended_container = $extended;
+		$this->extended_container = $extended->getValue( $container );
 		$this->hook_registry      = new HookRegistry( $container );
 		parent::setUp();
 	}
@@ -37,7 +43,6 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 	 *
 	 * @param $classname
 	 * @return void
-	 * @throws \ReflectionException
 	 */
 	private function whitelist_classname( $classname ) {
 		$reflection = new \ReflectionProperty( $this->extended_container, 'registration_whitelist' );
@@ -47,20 +52,35 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 		$reflection->setValue( $this->extended_container, $whitelist );
 	}
 
+	/**
+	 * Test add_action returns false when an invalid callable is given.
+	 *
+	 * @return void
+	 */
 	public function test_it_returns_false_when_callable_is_invalid() {
 		// the 2nd argument of add_action must be a string (global func) or a callable [classname, method].
 		$result = $this->hook_registry->add_action( 'test', array( 'classname', 'method', 'invalid' ) );
 		$this->assertFalse( $result );
 	}
 
+	/**
+	 * Test adding and removing an action with a global function.
+	 *
+	 * @return void
+	 */
 	public function test_it_can_add_and_remove_action_with_function() {
-		 $action_name = 'hookRegistryTest-action-func';
+		// Register.
+		$action_name = 'hookRegistryTest-action-func';
 		$this->hook_registry->add_action( $action_name, 'print_r' );
+
+		// Call and confirm.
 		ob_start();
 		do_action( $action_name, 'test' );
 		$content = ob_get_contents();
 		ob_end_clean();
 		$this->assertEquals( $content, 'test' );
+
+		// Remove and confirm.
 		$this->hook_registry->remove_action( $action_name, 'print_r' );
 		ob_start();
 		do_action( $action_name, 'test' );
@@ -69,6 +89,11 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 		$this->assertEmpty( $content );
 	}
 
+	/**
+	 * Test adding and removing an action with a method.
+	 *
+	 * @return void
+	 */
 	public function test_it_can_add_and_remove_action_with_method() {
 		$sut = new class() {
 			public $count = 0;
@@ -96,16 +121,31 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 		$this->assertSame( 1, $sut->count );
 	}
 
+	/**
+	 * Test adding and removing a filter with a function.
+	 *
+	 * @return void
+	 */
 	public function test_it_can_add_and_remove_filter_with_function() {
-		 $filter_name = 'hookRegistryTest-filter-func';
+		// Register.
+		$filter_name = 'hookRegistryTest-filter-func';
 		$this->hook_registry->add_filter( $filter_name, '__return_true' );
+
+		// Call and confirm.
 		$result = apply_filters( $filter_name, false );
 		$this->assertTrue( $result );
+
+		// Remove and confirm.
 		$this->hook_registry->remove_filter( $filter_name, '__return_true' );
 		$result = apply_filters( $filter_name, false );
 		$this->assertFalse( $result );
 	}
 
+	/**
+	 * Test adding and removing a filter with a method.
+	 *
+	 * @return void
+	 */
 	public function test_it_can_add_and_remove_filter_with_method() {
 		$sut = new class() {
 			public $count = 0;
@@ -124,6 +164,7 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 				return $sut;
 			}
 		);
+
 		$this->hook_registry->add_filter( $filter_name, $callable );
 		$result = apply_filters( $filter_name, 'abcd' );
 		$this->assertEquals( 'abcdefg', $result );
@@ -132,15 +173,25 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 		$this->assertEquals( 'abcd', $result );
 	}
 
-
-	public function test_it_removes_action_by_id() {
+	/**
+	 * Test removing an action by I.D.
+	 *
+	 * @return void
+	 */
+	public function test_it_can_remove_action_by_id() {
+		// Register.
 		$action_name = 'hookRegistryTest-action-func-remove';
 		$this->hook_registry->add_action( $action_name, 'print_r', 10, 1, 'action-id' );
+
+		// Call.
 		ob_start();
 		do_action( $action_name, 'test' );
 		$content = ob_get_contents();
 		ob_end_clean();
+
+		// Confirm.
 		$this->assertEquals( $content, 'test' );
+
 		// Remove the action.
 		$this->hook_registry->remove_action_by_id( $action_name, 'action-id' );
 		// Confirm the action has been removed.
@@ -151,7 +202,12 @@ class HookRegistryTest extends \WC_Unit_Test_Case {
 		$this->assertEmpty( $content );
 	}
 
-	public function test_it_removes_filter_by_id() {
+	/**
+	 * Test removing a filter by I.D.
+	 *
+	 * @return void
+	 */
+	public function test_it_can_remove_filter_by_id() {
 		$filter_name = 'hookRegistryTest-filter-func-remove';
 		$this->hook_registry->add_filter( $filter_name, '__return_true', 10, 1, 'filter-id' );
 		$result = apply_filters( $filter_name, false );

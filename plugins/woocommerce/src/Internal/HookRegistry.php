@@ -48,15 +48,16 @@ class HookRegistry {
 	 * @return bool
 	 */
 	private function add( string $hook_name, $callable, string $type, int $priority = 10, int $accepted_args = 1, ?string $id = null ):bool {
-
 		if ( is_string( $callable ) ) {
-			$id                     = $id ?? "{$type}-func-{$callable}";
+			$id = $id ?? "{$type}-func-{$callable}";
+
 			$this->callbacks[ $id ] = function() use ( $callable ) {
 				return call_user_func_array( $callable, func_get_args() );
 			};
 
 		} elseif ( is_array( $callable ) && count( $callable ) === 2 ) {
-			$id                     = $id ?? "{$type}-method-{$callable[0]}-{$callable[1]}";
+			$id = $id ?? "{$type}-method-{$callable[0]}-{$callable[1]}";
+
 			$this->callbacks[ $id ] = function() use ( $callable ) {
 				list($classname, $method_name) = $callable;
 				$class_instance                = $this->container->get( $classname );
@@ -169,6 +170,7 @@ class HookRegistry {
 		if ( ! isset( $this->callbacks[ $id ] ) ) {
 			return false;
 		}
+
 		$func_name = $type === 'action' ? 'remove_action' : 'remove_filter';
 
 		return $func_name( $hook_name, $this->callbacks[ $id ] );
