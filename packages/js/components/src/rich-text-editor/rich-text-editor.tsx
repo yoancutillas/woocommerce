@@ -17,6 +17,7 @@ export const RichTextEditor: React.FC< RichTextEditorProps > = ( {
 }: RichTextEditorProps ) => {
 	return (
 		<IsolatedBlockEditor
+			className="woocommerce-rich-text-editor"
 			settings={ {} }
 			onSaveContent={ onSaveContent }
 			onLoad={ onLoad }
