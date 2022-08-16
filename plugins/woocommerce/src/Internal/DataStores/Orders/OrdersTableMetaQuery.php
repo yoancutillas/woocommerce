@@ -106,6 +106,10 @@ class OrdersTableMetaQuery {
 			return;
 		}
 
+		if ( $this->is_atomic( $meta_query ) ) {
+			$meta_query = array( $meta_query );
+		}
+
 		$this->queries = $this->sanitize_meta_query( $meta_query );
 
 		$this->meta_table   = $q->get_table_name( 'meta' );
