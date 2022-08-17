@@ -68,6 +68,12 @@ const WCPaymentsWelcomePage = lazy( () =>
 	)
 );
 
+const WooMobileAppWelcomePage = lazy( () =>
+	import(
+		/* webpackChunkName: "woo-mobile-app-welcome-page" */ '../woo-mobile-app-welcome'
+	)
+);
+
 const WCPaymentsSubscriptionsPage = lazy( () =>
 	import(
 		/* webpackChunkName: "wc-pay-subscriptions-page" */ '../subscriptions'
@@ -93,6 +99,22 @@ export const getPages = () => {
 		capability: 'manage_woocommerce',
 	} );
 
+	pages.push( {
+		container: WooMobileAppWelcomePage,
+		path: '/woo-mobile-app-welcome',
+		breadcrumbs: [
+			[
+				'/woo-mobile-app-welcome',
+				__( 'WooCommerce Mobile App', 'woocommerce' ),
+			],
+			__( 'WooCommerce Mobile App', 'woocommerce' ),
+		],
+		navArgs: {
+			id: 'woocommerce-wc-pay-welcome-page',
+		},
+		wpOpenMenu: 'toplevel_page_woocommerce-wc-pay-welcome-page',
+		capability: 'manage_woocommerce',
+	} );
 	if ( window.wcAdminFeatures.analytics ) {
 		pages.push( {
 			container: Dashboard,

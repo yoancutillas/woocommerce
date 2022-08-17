@@ -16,6 +16,7 @@ import {
 } from '@woocommerce/data';
 import { compose } from 'redux';
 import { recordEvent } from '@woocommerce/tracks';
+import { getAdminLink } from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -51,6 +52,14 @@ function getHomeItems() {
 		{
 			title: __( 'Store Setup Checklist', 'woocommerce' ),
 			link: 'https://woocommerce.com/document/woocommerce-setup-wizard?utm_medium=product#store-setup-checklist',
+		},
+		{
+			title: __( 'Woo Mobile App', 'woocommerce' ),
+			link: getAdminLink(
+				'./admin.php?page=wc-admin&path=%2Fwoo-mobile-app-welcome'
+			),
+			linkType: 'wp-admin',
+			target: '_self',
 		},
 	];
 }
@@ -342,8 +351,8 @@ function getListItems( props ) {
 		),
 		before: <Icon icon={ page } />,
 		after: <Icon icon={ chevronRight } />,
-		linkType: 'external',
-		target: '_blank',
+		linkType: item.linkType ?? 'external',
+		target: item.target ?? '_blank',
 		href: item.link,
 		onClick,
 	} ) );
