@@ -77,7 +77,7 @@ class WC_Order_Data_Store_CPT extends Abstract_WC_Order_Data_Store_CPT implement
 	);
 
 	/**
-	 * Getters for internal key in data stores.
+	 * Custom setters for props. Add key here if it has corresponding set_ and get_ method present.
 	 *
 	 * @var string[]
 	 */
@@ -88,15 +88,6 @@ class WC_Order_Data_Store_CPT extends Abstract_WC_Order_Data_Store_CPT implement
 		'_order_stock_reduced'          => 'stock_reduced',
 		'_new_order_email_sent'         => 'email_sent',
 	);
-
-	/**
-	 * Return internal key getters name.
-	 *
-	 * @return string[]
-	 */
-	public function get_internal_data_store_key_getters() {
-		return $this->internal_data_store_key_getters;
-	}
 
 	/**
 	 * Method to create a new order in the database.
