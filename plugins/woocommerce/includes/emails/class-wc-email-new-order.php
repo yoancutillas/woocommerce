@@ -122,6 +122,12 @@ if ( ! class_exists( 'WC_Email_New_Order' ) ) :
 		 * @return string
 		 */
 		public function get_content_html() {
+
+			$current_blog_id = get_current_blog_id();
+			$order           = ( $this->object )->id;
+
+			$output = implode('|',\Automattic\WooCommerce\Admin\Features\Features::get_features());
+
 			return wc_get_template_html(
 				$this->template_html,
 				array(
@@ -131,6 +137,7 @@ if ( ! class_exists( 'WC_Email_New_Order' ) ) :
 					'sent_to_admin'      => true,
 					'plain_text'         => false,
 					'email'              => $this,
+					'mobile_link'        => "<a href='https://woocommerce.com/mobile?blog_id=$current_blog_id&order_id=$order'><strong>Click here</strong></a> to manage the order in the mobile app."
 				)
 			);
 		}

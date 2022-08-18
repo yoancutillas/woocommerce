@@ -52,6 +52,11 @@ if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 }
 
+// if ( \Automattic\WooCommerce\Admin\Features\Features::is_enabled( 'mobile-deep-links' ) ) {
+echo $mobile_link;
+echo "foobar";
+// }
+
 /*
  * @hooked WC_Emails::email_footer() Output the email footer
  */
