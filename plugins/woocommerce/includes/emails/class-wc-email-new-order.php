@@ -137,7 +137,7 @@ if ( ! class_exists( 'WC_Email_New_Order' ) ) :
 					'sent_to_admin'      => true,
 					'plain_text'         => false,
 					'email'              => $this,
-					'mobile_link'        => "<a href='https://woocommerce.com/mobile?blog_id=$current_blog_id&order_id=$order'><strong>Click here</strong></a> to manage the order in the mobile app."
+					'mobile_link'        => "<a href='https://thelinkswootester.mystagingwebsite.com/test'><strong>Click here</strong></a> to collect In-Person Payments easily using our mobile app."
 				)
 			);
 		}

@@ -54,7 +54,6 @@ if ( $additional_content ) {
 
 // if ( \Automattic\WooCommerce\Admin\Features\Features::is_enabled( 'mobile-deep-links' ) ) {
 echo $mobile_link;
-echo "foobar";
 // }
 
 /*
