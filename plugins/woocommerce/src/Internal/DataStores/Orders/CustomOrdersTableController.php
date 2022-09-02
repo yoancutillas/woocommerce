@@ -319,6 +319,8 @@ class CustomOrdersTableController {
 		}
 
 		delete_option( self::CUSTOM_ORDERS_TABLE_USAGE_ENABLED_OPTION );
+		delete_option( OrderCacheController::ORDERS_CACHE_USAGE_ENABLED_OPTION );
+		delete_option( OrderCacheController::ORDERS_CACHE_USAGE_ENABLED_BACKUP_OPTION );
 		$this->data_synchronizer->delete_database_tables();
 	}
 
