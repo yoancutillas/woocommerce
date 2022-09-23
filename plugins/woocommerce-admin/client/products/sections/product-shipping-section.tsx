@@ -1,10 +1,15 @@
 /**
  * External dependencies
  */
-import { SelectControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Link, Spinner, useFormContext } from '@woocommerce/components';
+import {
+	Link,
+	Spinner,
+	useFormContext,
+	__experimentalSelectControl as SelectControl,
+} from '@woocommerce/components';
 import {
 	EXPERIMENTAL_PRODUCT_SHIPPING_CLASSES_STORE_NAME,
 	Product,
@@ -20,21 +25,18 @@ import { getTextControlProps } from './utils';
 import { ADMIN_URL } from '../../utils/admin-settings';
 import './product-shipping-section.scss';
 
-const DEFAULT_SHIPPING_CLASS_OPTIONS: SelectControl.Option[] = [
-	{ value: '', label: __( 'No shipping class', 'woocommerce' ) },
+const DEFAULT_SHIPPING_CLASS_OPTIONS = [
+	{
+		id: 0,
+		name: __( 'No shipping class', 'woocommerce' ),
+	},
 ];
-
-function mapShippingClassToSelectOption(
-	shippingClasses: ProductShippingClass[]
-): SelectControl.Option[] {
-	return shippingClasses.map( ( { slug, name } ) => ( {
-		value: slug,
-		label: name,
-	} ) );
-}
 
 export const ProductShippingSection: React.FC = () => {
 	const { getInputProps } = useFormContext< Product >();
+	const [ selected, setSelected ] = useState<
+		Partial< ProductShippingClass >
+	>( DEFAULT_SHIPPING_CLASS_OPTIONS[ 0 ] );
 
 	const { shippingClasses, hasResolvedShippingClasses } = useSelect(
 		( select ) => {
@@ -62,17 +64,19 @@ export const ProductShippingSection: React.FC = () => {
 		>
 			{ hasResolvedShippingClasses ? (
 				<div>
-					<SelectControl
+					<SelectControl< Partial< ProductShippingClass > >
+						getFilteredItems={ ( allItems ) => allItems }
+						getItemLabel={ ( item ) => item?.name || '' }
+						getItemValue={ ( item ) => String( item?.id ) }
 						label={ __( 'Shipping class', 'woocommerce' ) }
 						{ ...getTextControlProps(
 							getInputProps( 'shipping_class' )
 						) }
-						options={ [
+						items={ [
 							...DEFAULT_SHIPPING_CLASS_OPTIONS,
-							...mapShippingClassToSelectOption(
-								shippingClasses ?? []
-							),
+							...( shippingClasses ?? [] ),
 						] }
+						selected={ selected }
 					/>
 					<span className="woocommerce-product-form__secondary-text">
 						{ interpolateComponents( {
