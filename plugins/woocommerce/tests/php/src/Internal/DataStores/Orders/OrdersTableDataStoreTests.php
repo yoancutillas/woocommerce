@@ -1217,283 +1217,381 @@ class OrdersTableDataStoreTests extends WC_Unit_Test_Case {
 			$query->orders,
 			'Search terms match against address data as well as order item names.'
 		);
-	}
-
-	/**
-	 * Test methods get_total_tax_refunded and get_total_shipping_refunded.
+		/
+		php / src / Internal / DataStores / Orders / OrdersTableDataStoreTests . php * Test methods get_total_tax_refunded and get_total_shipping_refunded .
 	 */
 	public function test_get_total_tax_refunded_and_get_total_shipping_refunded() {
-		update_option( 'woocommerce_prices_include_tax', 'yes' );
-		update_option( 'woocommerce_calc_taxes', 'yes' );
+			update_option( 'woocommerce_prices_include_tax', 'yes' );
+			update_option( 'woocommerce_calc_taxes', 'yes' );
 
-		$tax_rate = array(
-			'tax_rate_country'  => '',
-			'tax_rate'          => '20',
-			'tax_rate_name'     => 'tax',
-			'tax_rate_order'    => '1',
-			'tax_rate_shipping' => '1',
-		);
-		WC_Tax::_insert_tax_rate( $tax_rate );
+			$tax_rate = array(
+				'tax_rate_country'  => '',
+				'tax_rate'          => '20',
+				'tax_rate_name'     => 'tax',
+				'tax_rate_order'    => '1',
+				'tax_rate_shipping' => '1',
+			);
+			WC_Tax::_insert_tax_rate( $tax_rate );
 
-		$rate = new WC_Shipping_Rate( 'flat_rate_shipping', 'Flat rate shipping', '10', array(), 'flat_rate' );
-		$item = new WC_Order_Item_Shipping();
-		$item->set_props(
-			array(
-				'method_title' => $rate->label,
-				'method_id'    => $rate->id,
-				'total'        => wc_format_decimal( $rate->cost ),
-				'taxes'        => $rate->taxes,
-			)
-		);
-		foreach ( $rate->get_meta_data() as $key => $value ) {
-			$item->add_meta_data( $key, $value, true );
+			$rate = new WC_Shipping_Rate( 'flat_rate_shipping', 'Flat rate shipping', '10', array(), 'flat_rate' );
+			$item = new WC_Order_Item_Shipping();
+			$item->set_props(
+				array(
+					'method_title' => $rate->label,
+					'method_id'    => $rate->id,
+					'total'        => wc_format_decimal( $rate->cost ),
+					'taxes'        => $rate->taxes,
+				)
+			);
+			foreach ( $rate->get_meta_data() as $key => $value ) {
+				$item->add_meta_data( $key, $value, true );
+			}
+
+			$order = new WC_Order();
+			$this->switch_data_store( $order, $this->sut );
+			$order->save();
+			$order->add_product( WC_Helper_Product::create_simple_product(), 10 );
+			$order->add_item( $item );
+			$order->calculate_totals();
+			$order->save();
+			$this->sut->backfill_post_record( $order );
+
+			assert( $order->get_total_tax() > 0 );
+			assert( $order->get_total() > 0 );
+			$product_item_id  = current( $order->get_items() )->get_id();
+			$shipping_item_id = current( $order->get_items( 'shipping' ) )->get_id();
+			$refund           = wc_create_refund(
+				array(
+					'order_id'   => $order->get_id(),
+					'line_items' => array(
+						$product_item_id  => array(
+							'id'           => $product_item_id,
+							'qty'          => 1,
+							'refund_total' => 10,
+							'refund_tax'   => array( 1 => 2 ),
+						),
+						$shipping_item_id => array(
+							'id'           => $shipping_item_id,
+							'qty'          => 1,
+							'refund_total' => 10,
+							'refund_tax'   => array( 1 => 3 ),
+						),
+					),
+				)
+			);
+			$refund->save();
+			$this->migrator->migrate_order( $refund->get_id() );
+
+			$this->assertEquals( 5, $order->get_data_store()->get_total_tax_refunded( $order ) );
+			$this->assertEquals( 10, $order->get_data_store()->get_total_shipping_refunded( $order ) );
 		}
-
-		$order = new WC_Order();
-		$this->switch_data_store( $order, $this->sut );
-		$order->save();
-		$order->add_product( WC_Helper_Product::create_simple_product(), 10 );
-		$order->add_item( $item );
-		$order->calculate_totals();
-		$order->save();
-		$this->sut->backfill_post_record( $order );
-
-		assert( $order->get_total_tax() > 0 );
-		assert( $order->get_total() > 0 );
-		$product_item_id  = current( $order->get_items() )->get_id();
-		$shipping_item_id = current( $order->get_items( 'shipping' ) )->get_id();
-		$refund           = wc_create_refund(
-			array(
-				'order_id'   => $order->get_id(),
-				'line_items' => array(
-					$product_item_id  => array(
-						'id'           => $product_item_id,
-						'qty'          => 1,
-						'refund_total' => 10,
-						'refund_tax'   => array( 1 => 2 ),
-					),
-					$shipping_item_id => array(
-						'id'           => $shipping_item_id,
-						'qty'          => 1,
-						'refund_total' => 10,
-						'refund_tax'   => array( 1 => 3 ),
-					),
-				),
-			)
-		);
-		$refund->save();
-		$this->migrator->migrate_order( $refund->get_id() );
-
-		$this->assertEquals( 5, $order->get_data_store()->get_total_tax_refunded( $order ) );
-		$this->assertEquals( 10, $order->get_data_store()->get_total_shipping_refunded( $order ) );
-	}
 
 	/**
 	 * Helper function to enable COT <> Posts sync.
 	 */
 	private function enable_cot_sync() {
-		$hook_name = 'pre_option_' . DataSynchronizer::ORDERS_DATA_SYNC_ENABLED_OPTION;
-		remove_all_actions( $hook_name );
-		add_filter(
-			$hook_name,
-			function () {
-				return 'yes';
-			}
-		);
-	}
+			$hook_name = 'pre_option_' . DataSynchronizer::ORDERS_DATA_SYNC_ENABLED_OPTION;
+			remove_all_actions( $hook_name );
+			add_filter(
+				$hook_name,
+				function () {
+					return 'yes';
+				}
+			);
+		}
 
 	/**
 	 * Helper function to disable COT <> Posts sync.
 	 */
 	private function disable_cot_sync() {
-		$hook_name = 'pre_option_' . DataSynchronizer::ORDERS_DATA_SYNC_ENABLED_OPTION;
-		remove_all_actions( $hook_name );
-		add_filter(
-			$hook_name,
-			function () {
-				return 'no';
-			}
-		);
-	}
+			$hook_name = 'pre_option_' . DataSynchronizer::ORDERS_DATA_SYNC_ENABLED_OPTION;
+			remove_all_actions( $hook_name );
+			add_filter(
+				$hook_name,
+				function () {
+					return 'no';
+				}
+			);
+		}
 
 	/**
 	 * Test that props set by datastores can be set and get by using any of metadata, object props or from data store setters.
 	 * Ideally, this should be possible only from getters and setters for objects, but for backward compatibility, earlier ways are also supported.
 	 */
 	public function test_internal_ds_getters_and_setters() {
-		$props_to_test = array(
-			'_download_permissions_granted',
-			'_recorded_sales',
-			'_recorded_coupon_usage_counts',
-			'_new_order_email_sent',
-			'_order_stock_reduced',
-		);
+			$props_to_test = array(
+				'_download_permissions_granted',
+				'_recorded_sales',
+				'_recorded_coupon_usage_counts',
+				'_new_order_email_sent',
+				'_order_stock_reduced',
+			);
 
-		$ds_getter_setter_names = array(
-			'_order_stock_reduced'  => 'stock_reduced',
-			'_new_order_email_sent' => 'email_sent',
-		);
+			$ds_getter_setter_names = array(
+				'_order_stock_reduced'  => 'stock_reduced',
+				'_new_order_email_sent' => 'email_sent',
+			);
 
-		$order = $this->create_complex_cot_order();
+			$order = $this->create_complex_cot_order();
 
-		// set everything to true via props.
-		foreach ( $props_to_test as $prop ) {
-			$order->{"set$prop"}( true );
-			$order->save();
-		}
-		$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, true, $ds_getter_setter_names );
-
-		// set everything to false, via metadata.
-		foreach ( $props_to_test as $prop ) {
-			$order->update_meta_data( $prop, false );
-			$order->save();
-		}
-		$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, false, $ds_getter_setter_names );
-
-		// set everything to true again, via datastore setter.
-		foreach ( $props_to_test as $prop ) {
-			if ( in_array( $prop, array_keys( $ds_getter_setter_names ), true ) ) {
-				$setter = $ds_getter_setter_names[ $prop ];
-				$order->get_data_store()->{"set_$setter"}( $order, true );
-				continue;
+			// set everything to true via props.
+			foreach ( $props_to_test as $prop ) {
+				$order->{"set$prop"}( true );
+				$order->save();
 			}
-			$order->get_data_store()->{"set$prop"}( $order, true );
-		}
-		$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, true, $ds_getter_setter_names );
+			$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, true, $ds_getter_setter_names );
 
-		// set everything to false again, via props.
-		foreach ( $props_to_test as $prop ) {
-			$order->{"set$prop"}( false );
-			$order->save();
+			// set everything to false, via metadata.
+			foreach ( $props_to_test as $prop ) {
+				$order->update_meta_data( $prop, false );
+				$order->save();
+			}
+			$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, false, $ds_getter_setter_names );
+
+			// set everything to true again, via datastore setter.
+			foreach ( $props_to_test as $prop ) {
+				if ( in_array( $prop, array_keys( $ds_getter_setter_names ), true ) ) {
+					$setter = $ds_getter_setter_names[ $prop ];
+					$order->get_data_store()->{"set_$setter"}( $order, true );
+					continue;
+				}
+				$order->get_data_store()->{"set$prop"}( $order, true );
+			}
+			$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, true, $ds_getter_setter_names );
+
+			// set everything to false again, via props.
+			foreach ( $props_to_test as $prop ) {
+				$order->{"set$prop"}( false );
+				$order->save();
+			}
+			$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, false, $ds_getter_setter_names );
 		}
-		$this->assert_get_prop_via_ds_object_and_metadata( $props_to_test, $order, false, $ds_getter_setter_names );
-	}
 
 	/**
 	 * Helper method to assert props are set.
 	 *
-	 * @param array    $props List of props to test.
+	 * @param array $props List of props to test.
 	 * @param WC_Order $order Order object.
-	 * @param mixed    $value Value to assert.
-	 * @param array    $ds_getter_setter_names List of props with custom getter/setter names.
+	 * @param mixed $value Value to assert.
+	 * @param array $ds_getter_setter_names List of props with custom getter/setter names.
 	 */
 	private function assert_get_prop_via_ds_object_and_metadata( array $props, WC_Order $order, $value, array $ds_getter_setter_names ) {
-		wp_cache_flush();
-		$refreshed_order = new WC_Order();
-		$refreshed_order->set_id( $order->get_id() );
-		$this->sut->read( $refreshed_order );
-		$this->switch_data_store( $refreshed_order, $this->sut );
-		$value = wc_bool_to_string( $value );
-		// assert via metadata.
-		foreach ( $props as $prop ) {
-			$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_meta( $prop ) ), "Failed getting $prop from metadata" );
-		}
-
-		// assert via datastore object.
-		foreach ( $props as $prop ) {
-			if ( in_array( $prop, array_keys( $ds_getter_setter_names ), true ) ) {
-				$getter = $ds_getter_setter_names[ $prop ];
-				$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_data_store()->{"get_$getter"}( $refreshed_order ) ), "Failed getting $prop from datastore" );
-				continue;
+			wp_cache_flush();
+			$refreshed_order = new WC_Order();
+			$refreshed_order->set_id( $order->get_id() );
+			$this->sut->read( $refreshed_order );
+			$this->switch_data_store( $refreshed_order, $this->sut );
+			$value = wc_bool_to_string( $value );
+			// assert via metadata.
+			foreach ( $props as $prop ) {
+				$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_meta( $prop ) ), "Failed getting $prop from metadata" );
 			}
-			$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_data_store()->{"get$prop"}( $order ) ), "Failed getting $prop from datastore" );
-		}
 
-		// assert via order object.
-		foreach ( $props as $prop ) {
-			$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->{"get$prop"}() ), "Failed getting $prop from object" );
+			// assert via datastore object.
+			foreach ( $props as $prop ) {
+				if ( in_array( $prop, array_keys( $ds_getter_setter_names ), true ) ) {
+					$getter = $ds_getter_setter_names[ $prop ];
+					$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_data_store()->{"get_$getter"}( $refreshed_order ) ), "Failed getting $prop from datastore" );
+					continue;
+				}
+				$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->get_data_store()->{"get$prop"}( $order ) ), "Failed getting $prop from datastore" );
+			}
+
+			// assert via order object.
+			foreach ( $props as $prop ) {
+				$this->assertEquals( $value, wc_bool_to_string( $refreshed_order->{"get$prop"}() ), "Failed getting $prop from object" );
+			}
 		}
-	}
 
 	/**
 	 * Legacy getters and setters for props migrated from data stores should be set/reset properly.
 	 */
 	public function test_legacy_getters_setters() {
-		$order_id = \Automattic\WooCommerce\RestApi\UnitTests\Helpers\OrderHelper::create_complex_wp_post_order();
-		$order    = wc_get_order( $order_id );
-		$this->switch_data_store( $order, $this->sut );
-		$bool_props = array(
-			'_download_permissions_granted' => 'download_permissions_granted',
-			'_recorded_sales'               => 'recorded_sales',
-			'_recorded_coupon_usage_counts' => 'recorded_coupon_usage_counts',
-			'_order_stock_reduced'          => 'order_stock_reduced',
-			'_new_order_email_sent'         => 'new_order_email_sent',
-		);
+			$order_id = \Automattic\WooCommerce\RestApi\UnitTests\Helpers\OrderHelper::create_complex_wp_post_order();
+			$order    = wc_get_order( $order_id );
+			$this->switch_data_store( $order, $this->sut );
+			$bool_props = array(
+				'_download_permissions_granted' => 'download_permissions_granted',
+				'_recorded_sales'               => 'recorded_sales',
+				'_recorded_coupon_usage_counts' => 'recorded_coupon_usage_counts',
+				'_order_stock_reduced'          => 'order_stock_reduced',
+				'_new_order_email_sent'         => 'new_order_email_sent',
+			);
 
-		$this->set_props_via_data_store( $order, $bool_props, true );
+			$this->set_props_via_data_store( $order, $bool_props, true );
 
-		$this->assert_props_value_via_data_store( $order, $bool_props, true );
+			$this->assert_props_value_via_data_store( $order, $bool_props, true );
 
-		$this->assert_props_value_via_order_object( $order, $bool_props, true );
+			$this->assert_props_value_via_order_object( $order, $bool_props, true );
 
-		// Let's repeat for false value.
+			// Let's repeat for false value.
 
-		$this->set_props_via_data_store( $order, $bool_props, false );
+			$this->set_props_via_data_store( $order, $bool_props, false );
 
-		$this->assert_props_value_via_data_store( $order, $bool_props, false );
+			$this->assert_props_value_via_data_store( $order, $bool_props, false );
 
-		$this->assert_props_value_via_order_object( $order, $bool_props, false );
+			$this->assert_props_value_via_order_object( $order, $bool_props, false );
 
-		// Let's repeat for true value but setting via order object.
+			// Let's repeat for true value but setting via order object.
 
-		$this->set_props_via_order_object( $order, $bool_props, true );
+			$this->set_props_via_order_object( $order, $bool_props, true );
 
-		$this->assert_props_value_via_data_store( $order, $bool_props, true );
+			$this->assert_props_value_via_data_store( $order, $bool_props, true );
 
-		$this->assert_props_value_via_order_object( $order, $bool_props, true );
+			$this->assert_props_value_via_order_object( $order, $bool_props, true );
 
-	}
+		}
 
 	/**
 	 * Helper function to set prop via data store.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $props List of props and their setter names.
-	 * @param mixed    $value value to set.
+	 * @param array $props List of props and their setter names.
+	 * @param mixed $value value to set.
 	 */
 	private function set_props_via_data_store( $order, $props, $value ) {
-		foreach ( $props as $meta_key_name => $prop_name ) {
-			$order->get_data_store()->{"set_$prop_name"}( $order, $value );
+			foreach ( $props as $meta_key_name => $prop_name ) {
+				$order->get_data_store()->{"set_$prop_name"}( $order, $value );
+			}
 		}
-	}
 
 	/**
 	 * Helper function to set prop value via object.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $props List of props and their setter names.
-	 * @param mixed    $value value to set.
+	 * @param array $props List of props and their setter names.
+	 * @param mixed $value value to set.
 	 */
 	private function set_props_via_order_object( $order, $props, $value ) {
-		foreach ( $props as $meta_key_name => $prop_name ) {
-			$order->{"set_$prop_name"}( $value );
+			foreach ( $props as $meta_key_name => $prop_name ) {
+				$order->{"set_$prop_name"}( $value );
+			}
+			$order->save();
 		}
-		$order->save();
-	}
 
 	/**
 	 * Helper function to assert prop value via data store.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $props List of props and their getter names.
-	 * @param mixed    $value value to assert.
+	 * @param array $props List of props and their getter names.
+	 * @param mixed $value value to assert.
 	 */
 	private function assert_props_value_via_data_store( $order, $props, $value ) {
-		foreach ( $props as $meta_key_name => $prop_name ) {
-			$this->assertEquals( $value, $order->get_data_store()->{"get_$prop_name"}( $order ), "Prop $prop_name was not set correctly." );
+			foreach ( $props as $meta_key_name => $prop_name ) {
+				$this->assertEquals( $value, $order->get_data_store()->{"get_$prop_name"}( $order ), "Prop $prop_name was not set correctly." );
+			}
 		}
-	}
 
 	/**
 	 * Helper function to assert prop value via order object.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $props List of props and their getter names.
-	 * @param mixed    $value value to assert.
+	 * @param array $props List of props and their getter names.
+	 * @param mixed $value value to assert.
 	 */
 	private function assert_props_value_via_order_object( $order, $props, $value ) {
-		foreach ( $props as $meta_key_name => $prop_name ) {
-			$this->assertEquals( $value, $order->{"get_$prop_name"}(), "Prop $prop_name was not set correctly." );
+			foreach ( $props as $meta_key_name => $prop_name ) {
+				$this->assertEquals( $value, $order->{"get_$prop_name"}(), "Prop $prop_name was not set correctly." );
+			}
 		}
+	}
+
+	/**
+	 * Ensure field_query works as expected.
+	 */
+	public function test_cot_query_field_query(): void {
+		$orders_test_data = array(
+			array( 'Werner', 'Heisenberg', 'Unknown', 'werner_heisenberg_1', '15.0' ),
+			array( 'Max', 'Planck', 'Quanta', 'planck_1', '16.0' ),
+			array( 'Édouard', 'Roche', 'Tidal', 'roche_3', '9.99' ),
+		);
+		$order_ids       = array();
+
+		// Create some test orders.
+		foreach ( $orders_test_data as $order_data ) {
+			$order = new \WC_Order();
+			$this->switch_data_store( $order, $this->sut );
+			$order->set_status( 'wc-completed' );
+			$order->set_billing_first_name( $order_data[0] );
+			$order->set_billing_last_name( $order_data[1] );
+			$order->set_billing_city( $order_data[2] );
+			$order->set_order_key( $order_data[3] );
+			$order->set_total( $order_data[4] );
+
+			$order_ids[] = $order->save();
+		}
+
+		// Relatively simple field_query.
+		$field_query = array(
+			'relation' => 'OR',
+			array(
+				'field' => 'order_key',
+				'value' => 'werner_heisenberg_1',
+			),
+			array(
+				'field' => 'order_key',
+				'value' => 'planck_1',
+			)
+		);
+		$query = new OrdersTableQuery( array( 'field_query' => $field_query ) );
+		$this->assertEqualsCanonicalizing( array( $order_ids[0], $order_ids[1] ), $query->orders );
+
+		// A more complex field_query.
+		$field_query = array(
+			array(
+				'field'   => 'billing_first_name',
+				'value'   => array( 'Werner', 'Max', 'Édouard' ),
+				'compare' => 'IN',
+			),
+			array(
+				'relation' => 'OR',
+				array(
+					'field'   => 'billing_last_name',
+					'value'   => 'Heisen',
+					'compare' => 'LIKE',
+				),
+				array(
+					'field'   => 'billing_city',
+					'value'   => 'Tid',
+					'compare' => 'LIKE',
+				),
+			),
+		);
+		$query = new OrdersTableQuery( array( 'field_query' => $field_query ) );
+		$this->assertEqualsCanonicalizing( array( $order_ids[0], $order_ids[2] ), $query->orders );
+
+		// Find orders with order_key not ending in a number (i.e. all).
+		$field_query = array(
+			array(
+				'field'   => 'order_key',
+				'value'   => '[0-9]$',
+				'compare' => 'RLIKE'
+			)
+		);
+		$query = new OrdersTableQuery( array( 'field_query' => $field_query ) );
+		$this->assertEqualsCanonicalizing( $order_ids, $query->orders );
+
+		// Find orders with order_key not ending in a number (i.e. none).
+		$field_query = array(
+			array(
+				'field'   => 'order_key',
+				'value'   => '[^0-9]$',
+				'compare' => 'NOT RLIKE'
+			)
+		);
+		$query = new OrdersTableQuery( array( 'field_query' => $field_query ) );
+		$this->assertCount( 0, $query->posts );
+
+		// Use full column name in a query.
+		$field_query = array(
+			array(
+				'field'   => $GLOBALS['wpdb']->prefix . 'wc_orders.total_amount',
+				'value'   => '10.0',
+				'compare' => '<=',
+				'type'    => 'NUMERIC',
+			)
+		);
+		$query = new OrdersTableQuery( array( 'field_query' => $field_query ) );
+		$this->assertEqualsCanonicalizing( array( $order_ids[2] ), $query->orders );
 	}
 }
