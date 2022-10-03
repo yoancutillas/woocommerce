@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce
  * Plugin URI: https://woocommerce.com/
  * Description: An eCommerce toolkit that helps you sell anything. Beautifully.
- * Version: 7.0.0-hpos.dev.4
+ * Version: 7.0.0-hpos.dev.5
  * Author: Automattic
  * Author URI: https://woocommerce.com
  * Text Domain: woocommerce
