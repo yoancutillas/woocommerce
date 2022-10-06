@@ -1,4 +1,6 @@
 const { test, expect } = require( '@playwright/test' );
+const { storeDetails } = require('../../test-data/data');
+const { api } = require('../../utils');
 const wcApi = require( '@woocommerce/woocommerce-rest-api' ).default;
 
 const guestEmail = 'checkout-guest@example.com';
@@ -89,6 +91,9 @@ test.describe( 'Checkout page', () => {
 	} );
 
 	test( 'should display cart items in order review', async ( { page } ) => {
+		// ensure that the store's address is in the US
+		await api.update.storeDetails( storeDetails.us.store );
+
 		await page.goto( `/shop/?add-to-cart=${ productId }` );
 		await page.waitForLoadState( 'networkidle' );
 
@@ -254,6 +259,9 @@ test.describe( 'Checkout page', () => {
 	} );
 
 	test( 'allows existing customer to place order', async ( { page } ) => {
+		// ensure that the store's address is in the US
+		await api.update.storeDetails( storeDetails.us.store );
+
 		await page.goto( 'wp-admin/' );
 		await page.fill( 'input[name="log"]', 'customer' );
 		await page.fill( 'input[name="pwd"]', 'password' );
