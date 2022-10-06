@@ -16,7 +16,7 @@ if ( process.env.CONSUMER_KEY && process.env.CONSUMER_SECRET ) {
 const update = {
 	storeDetails: async ( store ) => {
 		// ensure store address is US
-		const res = await api.post( 'settings/general/batch', {
+		await api.post( 'settings/general/batch', {
 			update: [
 				{
 					id: 'woocommerce_store_address',
@@ -36,8 +36,6 @@ const update = {
 				},
 			],
 		} );
-
-		console.log( res.data );
 	},
 	enableCashOnDelivery: async () => {
 		await api.put( 'payment_gateways/cod', {
@@ -64,11 +62,13 @@ const get = {
 };
 
 const create = {
-	product: async ( product ) => {
+	product: async ( product, is_virtual = false, is_downloadable = false ) => {
 		const response = await api.post( 'products', {
 			name: product.name,
 			type: product.type,
 			regular_price: product.price,
+			virtual: is_virtual,
+			downloadable: is_downloadable,
 		} );
 
 		return response.data.id;
