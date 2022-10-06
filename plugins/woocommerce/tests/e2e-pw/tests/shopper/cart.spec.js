@@ -59,7 +59,7 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 
 		await page.goto( '/cart/' );
@@ -72,12 +72,12 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		// Once the view cart link is visible, item has been added
 		await page.waitForLoadState( 'networkidle' );
 		// Click add to cart a second time (load the shop in case redirection enabled)
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 
 		await page.goto( '/cart/' );
@@ -88,7 +88,7 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 
 		await page.goto( '/cart/' );
@@ -104,7 +104,7 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 		await page.goto( '/cart/' );
 
@@ -124,7 +124,7 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 
 		await page.goto( '/cart/' );
@@ -144,7 +144,7 @@ test.describe( 'Cart page', () => {
 		page,
 	} ) => {
 		await page.goto( '/shop/' );
-		await page.click( `a:below(:text("${ productName }"))` );
+		await page.click( `a[data-product_id='${ productId }']` );
 		await page.waitForLoadState( 'networkidle' );
 
 		await page.goto( '/cart/' );
