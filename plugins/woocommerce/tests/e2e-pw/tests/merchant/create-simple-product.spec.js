@@ -92,9 +92,11 @@ test.describe( 'Add New Simple Product Page', () => {
 		await page.click( `h2:has-text("${ virtualProductName }")` );
 		await page.click( 'text=Add to cart' );
 		await page.click( 'text=View cart' );
-		await expect( page.locator( 'td[data-title=Product]' ) ).toContainText(
-			virtualProductName
-		);
+		await expect(
+			page.locator(
+				'td[data-title=Product] a[href*=virtual-product-name]'
+			)
+		).toContainText( virtualProductName );
 		await expect(
 			page.locator( 'a.shipping-calculator-button' )
 		).not.toBeVisible();
@@ -130,9 +132,11 @@ test.describe( 'Add New Simple Product Page', () => {
 		await page.click( `h2:has-text("${ nonVirtualProductName }")` );
 		await page.click( 'text=Add to cart' );
 		await page.click( 'text=View cart' );
-		await expect( page.locator( 'td[data-title=Product]' ) ).toContainText(
-			nonVirtualProductName
-		);
+		await expect(
+			page.locator(
+				'td[data-title=Product] a[href*=non-virtual-product-name]'
+			)
+		).toContainText( nonVirtualProductName );
 		await expect(
 			page.locator( 'a.shipping-calculator-button' )
 		).toBeVisible();
