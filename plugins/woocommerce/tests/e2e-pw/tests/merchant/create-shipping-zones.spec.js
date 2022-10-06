@@ -176,6 +176,15 @@ test.describe( 'WooCommerce Shipping Settings - Add new shipping zone', () => {
 	test( 'add shipping zone with region and then delete the region', async ( {
 		page,
 	} ) => {
+		await page.route(
+			'**/options?options=woocommerce_settings_shipping_recommendations_hidden&_locale=user',
+			( route ) => {
+				route.fulfill( {
+					woocommerce_settings_shipping_recommendations_hidden: false,
+				} );
+			}
+		);
+
 		await page.goto( 'wp-admin/admin.php?page=wc-settings&tab=shipping' );
 		if ( await page.isVisible( `text=${ shippingZoneNameUSRegion }` ) ) {
 			// this shipping zone already exists, don't create it
