@@ -28,6 +28,7 @@ class WC_Shipping_Rate {
 		'label'       => '',
 		'cost'        => 0,
 		'taxes'       => array(),
+		'description' => '',
 	);
 
 	/**
@@ -144,6 +145,15 @@ class WC_Shipping_Rate {
 	}
 
 	/**
+	 * Set rate description.
+	 *
+	 * @param string $label Shipping rate description.
+	 */
+	public function set_description( $description ) {
+		$this->data['description'] = wp_kses_post( (string) $description );
+	}
+
+	/**
 	 * Set rate cost.
 	 *
 	 * @todo 4.0 Prevent negative value being set. #19293
@@ -201,6 +211,13 @@ class WC_Shipping_Rate {
 	 */
 	public function get_label() {
 		return apply_filters( 'woocommerce_shipping_rate_label', $this->data['label'], $this );
+	}
+
+	/**
+	 * Get rate description.
+	 */
+	public function get_description() {
+		return apply_filters( 'woocommerce_shipping_rate_description', $this->data['description'], $this );
 	}
 
 	/**
