@@ -307,6 +307,10 @@ abstract class WC_Shipping_Method extends WC_Settings_API {
 		$rate->set_cost( $total_cost );
 		$rate->set_taxes( $taxes );
 
+		if ( ! empty( $args['description'] ) ) {
+			$rate->set_description( $args['description'] );
+		}
+
 		if ( ! empty( $args['meta_data'] ) ) {
 			foreach ( $args['meta_data'] as $key => $value ) {
 				$rate->add_meta_data( $key, $value );
