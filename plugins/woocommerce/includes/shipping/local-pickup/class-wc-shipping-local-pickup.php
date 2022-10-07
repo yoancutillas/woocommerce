@@ -67,14 +67,13 @@ class WC_Shipping_Local_Pickup extends WC_Shipping_Method {
 	public function calculate_shipping( $package = array() ) {
 		$this->add_rate(
 			array(
-				'label'     => $this->title,
-				'description' => 'test',
-				'package'   => $package,
-				'cost'      => $this->cost,
-				'meta_data' => [
+				'label'            => $this->title,
+				'description'      => $this->pickup_details,
+				'package'          => $package,
+				'cost'             => $this->cost,
+				'meta_data'        => [
 					'pickup_location' => $this->pickup_location,
 					'pickup_address'  => $this->pickup_address,
-					'pickup_details'  => $this->pickup_details,
 				],
 			)
 		);
