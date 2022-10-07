@@ -48,9 +48,12 @@ class WC_Shipping_Local_Pickup extends WC_Shipping_Method {
 		$this->init_settings();
 
 		// Define user set variables.
-		$this->title      = $this->get_option( 'title' );
-		$this->tax_status = $this->get_option( 'tax_status' );
-		$this->cost       = $this->get_option( 'cost' );
+		$this->title           = $this->get_option( 'title' );
+		$this->tax_status      = $this->get_option( 'tax_status' );
+		$this->cost            = $this->get_option( 'cost' );
+		$this->pickup_location = $this->get_option( 'pickup_location' );
+		$this->pickup_address  = $this->get_option( 'pickup_address' );
+		$this->pickup_details  = $this->get_option( 'pickup_details' );
 
 		// Actions.
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -64,9 +67,15 @@ class WC_Shipping_Local_Pickup extends WC_Shipping_Method {
 	public function calculate_shipping( $package = array() ) {
 		$this->add_rate(
 			array(
-				'label'   => $this->title,
-				'package' => $package,
-				'cost'    => $this->cost,
+				'label'     => $this->title,
+				'description' => 'test',
+				'package'   => $package,
+				'cost'      => $this->cost,
+				'meta_data' => [
+					'pickup_location' => $this->pickup_location,
+					'pickup_address'  => $this->pickup_address,
+					'pickup_details'  => $this->pickup_details,
+				],
 			)
 		);
 	}
@@ -81,6 +90,30 @@ class WC_Shipping_Local_Pickup extends WC_Shipping_Method {
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'woocommerce' ),
 				'default'     => __( 'Local pickup', 'woocommerce' ),
+				'desc_tip'    => true,
+			),
+			'pickup_location'       => array(
+				'title'       => __( 'Location name', 'woocommerce' ),
+				'type'        => 'text',
+				'placeholder' => __( 'Location name', 'woocommerce' ),
+				'description' => __( 'The name of this pickup location e.g. London', 'woocommerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'pickup_address'       => array(
+				'title'       => __( 'Location Address', 'woocommerce' ),
+				'type'        => 'text',
+				'placeholder' => __( 'Add the full address of this location', 'woocommerce' ),
+				'description' => __( 'The address for this pickup location.', 'woocommerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'pickup_details'       => array(
+				'title'       => __( 'Pickup Details', 'woocommerce' ),
+				'type'        => 'textarea',
+				'placeholder' => __( 'Add the pickup details for this location', 'woocommerce' ),
+				'description' => __( 'Pickup details for this location.', 'woocommerce' ),
+				'default'     => '',
 				'desc_tip'    => true,
 			),
 			'tax_status' => array(
