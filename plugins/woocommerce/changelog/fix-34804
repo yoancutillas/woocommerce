@@ -1,0 +1,4 @@
+Significance: patch
+Type: performance
+
+Optimize query performance for calculating pending orders.
