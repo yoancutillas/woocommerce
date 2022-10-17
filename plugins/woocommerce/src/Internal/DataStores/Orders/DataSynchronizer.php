@@ -184,50 +184,34 @@ class DataSynchronizer implements BatchProcessorInterface {
 		$order_post_types            = wc_get_order_types( 'cot-migration' );
 		$order_post_type_placeholder = implode( ', ', array_fill( 0, count( $order_post_types ), '%s' ) );
 
-		if ( $this->custom_orders_table_is_authoritative() ) {
-			$missing_orders_count_sql = "
-SELECT COUNT(1) FROM $wpdb->posts posts
-INNER JOIN $orders_table orders ON posts.id=orders.id
-WHERE posts.post_type = '" . self::PLACEHOLDER_ORDER_POST_TYPE . "'
- AND orders.status not in ( 'auto-draft' )
-";
-			$operator                 = '>';
-		} else {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $order_post_type_placeholder is prepared.
-			$missing_orders_count_sql = $wpdb->prepare(
-				"
-SELECT COUNT(1) FROM $wpdb->posts posts
-LEFT JOIN $orders_table orders ON posts.id=orders.id
-WHERE
-  posts.post_type in ($order_post_type_placeholder)
-  AND posts.post_status != 'auto-draft'
-  AND orders.id IS NULL",
+		$post_tables_count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type IN ({$order_post_type_placeholder}) AND post_status NOT IN ('auto-draft');",
 				$order_post_types
-			);
-			// phpcs:enable
-			$operator = '<';
-		}
+			)
+		);
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $missing_orders_count_sql is prepared.
-		$sql = $wpdb->prepare(
-			"
-SELECT(
-	($missing_orders_count_sql)
-	+
-	(SELECT COUNT(1) FROM (
-		SELECT orders.id FROM $orders_table orders
+		$order_table_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$orders_table} WHERE status NOT IN ('auto-draft');" );
+
+		$pending_count = absint( $post_tables_count - $order_table_count );
+
+		if ( $this->custom_orders_table_is_authoritative() ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $missing_orders_count_sql is prepared.
+			$sql = $wpdb->prepare(
+				"
+		SELECT count(orders.id) FROM $orders_table orders
 		JOIN $wpdb->posts posts on posts.ID = orders.id
 		WHERE
 		  posts.post_type IN ($order_post_type_placeholder)
-		  AND orders.date_updated_gmt $operator posts.post_modified_gmt
-	) x)
-) count",
-			$order_post_types
-		);
+		  AND orders.date_updated_gmt > posts.post_modified_gmt
+		  ",
+				$order_post_types
+			);
+			$pending_count += absint( $wpdb->get_var( $sql ) );
+		}
 		// phpcs:enable
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$pending_count = (int) $wpdb->get_var( $sql );
 		wp_cache_set( 'woocommerce_hpos_pending_sync_count', $pending_count );
 		return $pending_count;
 	}
