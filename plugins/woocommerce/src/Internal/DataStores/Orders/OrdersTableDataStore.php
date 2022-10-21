@@ -2038,6 +2038,7 @@ FROM $order_meta_table
 	 * @return void
 	 */
 	private function maybe_backfill_post_record( $order ) {
+		return;
 		$data_sync = wc_get_container()->get( DataSynchronizer::class );
 		if ( $data_sync->data_sync_is_enabled() ) {
 			$this->backfill_post_record( $order );
