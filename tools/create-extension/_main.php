@@ -59,6 +59,7 @@ function add_extension_register_page() {
 		'title'    => __( 'My Example Page', 'my-textdomain' ),
 		'parent'   => 'woocommerce',
 		'path'     => '/example',
+		'capability' => 'manage_woocommerce',
 		'nav_args' => array(
 			'order'  => 10,
 			'parent' => 'woocommerce',
