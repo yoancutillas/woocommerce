@@ -82,67 +82,61 @@ export const ProductDetailsSection: React.FC = () => {
 	};
 
 	return (
-		<ProductSectionLayout
-			title={ __( 'Product details', 'woocommerce' ) }
-			description={ __(
-				'This info will be displayed on the product page, category pages, social media, and search results.',
-				'woocommerce'
-			) }
-		>
-			<Card>
-				<CardBody>
-					<div>
-						<TextControl
-							label={ interpolateComponents( {
-								mixedString: __(
-									'Name {{required/}}',
-									'woocommerce'
-								),
-								components: {
-									required: (
-										<span className="woocommerce-product-form__optional-input">
-											{ __(
-												'(required)',
-												'woocommerce'
-											) }
-										</span>
-									),
-								},
-							} ) }
-							name={ `${ PRODUCT_DETAILS_SLUG }-name` }
-							placeholder={ __(
-								'e.g. 12 oz Coffee Mug',
+		<Card>
+			<CardBody>
+				<ProductSectionLayout
+					title={ __( 'Product details', 'woocommerce' ) }
+					description={ __(
+						'This info will be displayed on the product page, category pages, social media, and search results.',
+						'woocommerce'
+					) }
+				>
+					<TextControl
+						label={ interpolateComponents( {
+							mixedString: __(
+								'Name {{required/}}',
 								'woocommerce'
-							) }
-							{ ...getInputProps( 'name', {
-								onBlur: setSkuIfEmpty,
-							} ) }
-						/>
-						{ values.id && ! hasNameError() && permalinkPrefix && (
-							<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
-								{ __( 'Product link', 'woocommerce' ) }
-								:&nbsp;
-								<a
-									href={ values.permalink }
-									target="_blank"
-									rel="noreferrer"
-								>
-									{ permalinkPrefix }
-									{ values.slug ||
-										cleanForSlug( values.name ) }
-									{ permalinkSuffix }
-								</a>
-								<Button
-									variant="link"
-									onClick={ () =>
-										setShowProductLinkEditModal( true )
-									}
-								>
-									{ __( 'Edit', 'woocommerce' ) }
-								</Button>
-							</span>
+							),
+							components: {
+								required: (
+									<span className="woocommerce-product-form__optional-input">
+										{ __( '(required)', 'woocommerce' ) }
+									</span>
+								),
+							},
+						} ) }
+						name={ `${ PRODUCT_DETAILS_SLUG }-name` }
+						placeholder={ __(
+							'e.g. 12 oz Coffee Mug',
+							'woocommerce'
 						) }
-					</div>
+						{ ...getInputProps( 'name', {
+							onBlur: setSkuIfEmpty,
+						} ) }
+					/>
+					{ values.id && ! hasNameError() && permalinkPrefix && (
+						<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
+							{ __( 'Product link', 'woocommerce' ) }
+							:&nbsp;
+							<a
+								href={ values.permalink }
+								target="_blank"
+								rel="noreferrer"
+							>
+								{ permalinkPrefix }
+								{ values.slug || cleanForSlug( values.name ) }
+								{ permalinkSuffix }
+							</a>
+							<Button
+								variant="link"
+								onClick={ () =>
+									setShowProductLinkEditModal( true )
+								}
+							>
+								{ __( 'Edit', 'woocommerce' ) }
+							</Button>
+						</span>
+					) }
 					<CategoryField
 						label={ __( 'Categories', 'woocommerce' ) }
 						placeholder={ __(
@@ -241,8 +235,8 @@ export const ProductDetailsSection: React.FC = () => {
 							'woocommerce'
 						) }
 					/>
-				</CardBody>
-			</Card>
-		</ProductSectionLayout>
+				</ProductSectionLayout>
+			</CardBody>
+		</Card>
 	);
 };

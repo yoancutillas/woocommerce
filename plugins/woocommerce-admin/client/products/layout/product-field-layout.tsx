@@ -1,7 +1,7 @@
 /**
- * Internal dependencies
+ * External dependencies
  */
-import { WooProductFieldItem } from './woo-product-field-item';
+import { WooProductFieldItem } from '@woocommerce/components';
 
 type ProductFieldLayoutProps = {
 	fieldName: string;

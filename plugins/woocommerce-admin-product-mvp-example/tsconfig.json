@@ -1,0 +1,34 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		// "declaration": false,
+		// "declarationMap": false,
+		"declarationDir": null,
+		"outDir": "build",
+		"composite": true,
+		"moduleResolution": "node",
+		"allowJs": true,
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"jsx": "react",
+		"jsxFactory": "createElement",
+		"jsxFragmentFactory": "Fragment",
+		"incremental": true,
+		"rootDir": "src",
+		"typeRoots": [ "./node_modules/@types" ]
+	},
+	"exclude": [
+		"node_modules",
+		"vendor",
+		"**/stories",
+		"**/build",
+		"**/build-module",
+		"**/build-types",
+		"**/test/*",
+		"**/jest.config.js",
+		"**/webpack.*.js",
+		"**/babel.config.js"
+	]
+}
