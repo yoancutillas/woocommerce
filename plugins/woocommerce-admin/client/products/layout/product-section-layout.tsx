@@ -8,7 +8,6 @@ import { FormSection } from '@woocommerce/components';
  * Internal dependencies
  */
 import './product-section-layout.scss';
-import { ProductFieldLayout } from './product-field-layout';
 
 type ProductSectionLayoutProps = {
 	title: string;
@@ -28,19 +27,7 @@ export const ProductSectionLayout: React.FC< ProductSectionLayoutProps > = ( {
 			description={ description }
 			className={ className }
 		>
-			{ Children.map( children, ( child ) => {
-				if ( isValidElement( child ) && child.props.onChange ) {
-					return (
-						<ProductFieldLayout
-							fieldName={ child.props.name }
-							categoryName={ title }
-						>
-							{ child }
-						</ProductFieldLayout>
-					);
-				}
-				return child;
-			} ) }
+			{ children }
 		</FormSection>
 	);
 };

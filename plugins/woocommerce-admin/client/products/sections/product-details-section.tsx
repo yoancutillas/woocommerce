@@ -36,6 +36,7 @@ import { CategoryField } from '../fields/category-field';
 import { EditProductLinkModal } from '../shared/edit-product-link-modal';
 import { getCheckboxTracks } from './utils';
 import { ProductSectionLayout } from '../layout/product-section-layout';
+import { ProductFieldLayout } from '../layout/product-field-layout';
 
 const PRODUCT_DETAILS_SLUG = 'product-details';
 
@@ -91,29 +92,37 @@ export const ProductDetailsSection: React.FC = () => {
 		>
 			<Card>
 				<CardBody>
-					<TextControl
-						label={ interpolateComponents( {
-							mixedString: __(
-								'Name {{required/}}',
-								'woocommerce'
-							),
-							components: {
-								required: (
-									<span className="woocommerce-product-form__optional-input">
-										{ __( '(required)', 'woocommerce' ) }
-									</span>
+					<ProductFieldLayout
+						fieldName={ `${ PRODUCT_DETAILS_SLUG }-name` }
+						categoryName={ 'Product details' }
+					>
+						<TextControl
+							label={ interpolateComponents( {
+								mixedString: __(
+									'Name {{required/}}',
+									'woocommerce'
 								),
-							},
-						} ) }
-						name={ `${ PRODUCT_DETAILS_SLUG }-name` }
-						placeholder={ __(
-							'e.g. 12 oz Coffee Mug',
-							'woocommerce'
-						) }
-						{ ...getInputProps( 'name', {
-							onBlur: setSkuIfEmpty,
-						} ) }
-					/>
+								components: {
+									required: (
+										<span className="woocommerce-product-form__optional-input">
+											{ __(
+												'(required)',
+												'woocommerce'
+											) }
+										</span>
+									),
+								},
+							} ) }
+							name={ `${ PRODUCT_DETAILS_SLUG }-name` }
+							placeholder={ __(
+								'e.g. 12 oz Coffee Mug',
+								'woocommerce'
+							) }
+							{ ...getInputProps( 'name', {
+								onBlur: setSkuIfEmpty,
+							} ) }
+						/>
+					</ProductFieldLayout>
 					{ values.id && ! hasNameError() && permalinkPrefix && (
 						<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
 							{ __( 'Product link', 'woocommerce' ) }
