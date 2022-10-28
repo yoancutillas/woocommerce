@@ -86,6 +86,7 @@ class Init {
 			'Automattic\WooCommerce\Admin\API\NavigationFavorites',
 			'Automattic\WooCommerce\Admin\API\Taxes',
 			'Automattic\WooCommerce\Admin\API\MobileAppMagicLink',
+			'Automattic\WooCommerce\Admin\API\ProductForm'
 		);
 
 		if ( Features::is_enabled( 'analytics' ) ) {
