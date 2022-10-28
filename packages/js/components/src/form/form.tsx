@@ -134,7 +134,9 @@ function FormComponent< Values extends Record< string, any > >(
 		onChange = () => {},
 		onChanges = () => {},
 		...props
-	}: PropsWithChildren< FormProps< Values > >,
+	}: PropsWithChildren< FormProps< Values > > & {
+		ref?: React.Ref< FormRef< Values > >;
+	},
 	ref: React.Ref< FormRef< Values > >
 ): React.ReactElement | null {
 	const initialValues = useRef( props.initialValues ?? ( {} as Values ) );
@@ -409,7 +411,7 @@ function FormComponent< Values extends Record< string, any > >(
 	);
 }
 
-const Form = forwardRef( FormComponent ) as <
+const Form: typeof FormComponent = forwardRef( FormComponent ) as <
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Values extends Record< string, any >
 >(
