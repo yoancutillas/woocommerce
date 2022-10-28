@@ -82,15 +82,15 @@ export const ProductDetailsSection: React.FC = () => {
 	};
 
 	return (
-		<Card>
-			<CardBody>
-				<ProductSectionLayout
-					title={ __( 'Product details', 'woocommerce' ) }
-					description={ __(
-						'This info will be displayed on the product page, category pages, social media, and search results.',
-						'woocommerce'
-					) }
-				>
+		<ProductSectionLayout
+			title={ __( 'Product details', 'woocommerce' ) }
+			description={ __(
+				'This info will be displayed on the product page, category pages, social media, and search results.',
+				'woocommerce'
+			) }
+		>
+			<Card>
+				<CardBody>
 					<TextControl
 						label={ interpolateComponents( {
 							mixedString: __(
@@ -235,8 +235,8 @@ export const ProductDetailsSection: React.FC = () => {
 							'woocommerce'
 						) }
 					/>
-				</ProductSectionLayout>
-			</CardBody>
-		</Card>
+				</CardBody>
+			</Card>
+		</ProductSectionLayout>
 	);
 };
