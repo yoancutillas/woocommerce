@@ -93,7 +93,7 @@ export const ProductDetailsSection: React.FC = () => {
 			<Card>
 				<CardBody>
 					<ProductFieldLayout
-						fieldName={ `${ PRODUCT_DETAILS_SLUG }-name` }
+						fieldName="name"
 						categoryName={ 'Product details' }
 					>
 						<TextControl
@@ -146,16 +146,21 @@ export const ProductDetailsSection: React.FC = () => {
 							</Button>
 						</span>
 					) }
-					<CategoryField
-						label={ __( 'Categories', 'woocommerce' ) }
-						placeholder={ __(
-							'Search or create category…',
-							'woocommerce'
-						) }
-						{ ...getInputProps<
-							Pick< ProductCategory, 'id' | 'name' >[]
-						>( 'categories' ) }
-					/>
+					<ProductFieldLayout
+						fieldName="categories"
+						categoryName={ 'Product details' }
+					>
+						<CategoryField
+							label={ __( 'Categories', 'woocommerce' ) }
+							placeholder={ __(
+								'Search or create category…',
+								'woocommerce'
+							) }
+							{ ...getInputProps<
+								Pick< ProductCategory, 'id' | 'name' >[]
+							>( 'categories' ) }
+						/>
+					</ProductFieldLayout>
 					<CheckboxControl
 						label={
 							<>
