@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Adds a new field to a section of a settings page.
  *
@@ -34,10 +36,22 @@
  *                             field is output.
  * }
  */
-function add_product_form_field( $id, $title, $section = 'product_details', $args = array() ) {
+function wc_add_product_form_field( $id, $title, $section = 'product_details', $field = 'name', $args = array() ) {
 	global $wp_product_form_fields;
 
-	$wp_product_form_fields[ $section ][ $id ] = array(
+	$wp_product_form_fields[ $id ] = array(
+		'id'       => $id,
+		'title'    => $title,
+		'section'  => $section,
+		'field'    => $field,
+		'args'     => $args,
+	);
+}
+
+function wc_add_product_form_section( $id, $title, $args = array() ) {
+	global $wp_product_form_sections;
+
+	$wp_product_form_sections[ $id ] = array(
 		'id'       => $id,
 		'title'    => $title,
 		'args'     => $args,

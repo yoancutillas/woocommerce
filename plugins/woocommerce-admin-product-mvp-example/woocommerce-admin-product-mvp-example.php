@@ -12,27 +12,16 @@ use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 /**
  * Register the task.
  */
-function add_task_my_task() {
-	TaskLists::add_task(
-		'extended',
-		array(
-			'id'             => 'my-task',
-			'title'          => __( 'My task', 'woocommerce-admin' ),
-			'content'        => __(
-				'Add your task description here for display in the task list.',
-				'woocommerce-admin'
-			),
-			'action_label'   => __( 'Do action', 'woocommerce-admin' ),
-			'is_complete'    => Task::is_task_actioned( 'my-task' ),
-			'can_view'       => 'US' === WC()->countries->get_base_country(),
-			'time'           => __( '2 minutes', 'woocommerce-admin' ),
-			'is_dismissable' => true,
-			'is_snoozeable'  => true,
-		)
-	);
+function add_field() {
+	if ( function_exists( 'wc_add_product_form_field' ) ) {
+		wc_add_product_form_section( 'new-section', 'New section');
+		wc_add_product_form_field( 'test', 'Test', 'Product Details', 'categories', array(
+			'type' => 'text'
+		));
+	}
 }
 
-add_action( 'init', 'add_task_my_task' );
+add_action( 'init', 'add_field' );
 
 /**
  * Register the scripts to fill the task content on the frontend.
