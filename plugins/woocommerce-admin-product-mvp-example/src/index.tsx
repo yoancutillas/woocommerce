@@ -51,9 +51,9 @@ const NewField: React.FC = () => {
 	return (
 		<TextControl
 			label="New field"
-			name="new-field"
+			name="new_field"
 			placeholder="New field"
-			{ ...getInputProps( 'name' ) }
+			{ ...getInputProps( 'new_field' ) }
 		/>
 	);
 };

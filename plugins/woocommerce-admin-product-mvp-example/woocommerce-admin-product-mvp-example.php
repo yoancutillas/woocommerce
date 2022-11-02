@@ -47,3 +47,37 @@ function add_task_register_script() {
 }
 
 add_action( 'admin_enqueue_scripts', 'add_task_register_script' );
+
+function rest_api_prepare_product( $response, $post ) {
+	$post_id = is_callable( array( $post, 'get_id' ) ) ? $post->get_id() : ( ! empty( $post->ID ) ? $post->ID : null );
+
+	if ( empty( $response->data['test'] ) ) {
+		$data = get_option( 'woocommerce_product_mvp_example_' . strval( $post_id ), array() );
+		error_log( print_r( $data, true ) );
+		if ( ! empty( $data ) ) {
+			$response->data['test'] = $data['test'];
+			$response->data['new_field'] = $data['new_field'];
+		}
+	}
+
+	return $response;
+}
+
+add_filter( 'woocommerce_rest_prepare_product_object', 'rest_api_prepare_product', 10, 2 );
+
+function rest_api_add_to_product( $product, $request, $creating = true ) {
+	$product_id = is_callable( array( $product, 'get_id' ) ) ? $product->get_id() : ( ! empty( $product->ID ) ? $product->ID : null );
+	$params     = $request->get_params();
+	$test      = isset( $params['test'] ) ? $params['test'] : null;
+	$new_field = isset( $params['new_field'] ) ? $params['new-field'] : null;
+
+	error_log( 'saving: ' . $test . $new_field );
+	if ( $test !== null || $new_field !== null ) {
+		update_option( 'woocommerce_product_mvp_example_' . strval( $product_id ), array(
+			'test' => $test,
+			'new_field' => $new_field
+		));
+	}
+}
+
+add_action( 'woocommerce_rest_insert_product_object', 'rest_api_add_to_product', 10, 3 );
