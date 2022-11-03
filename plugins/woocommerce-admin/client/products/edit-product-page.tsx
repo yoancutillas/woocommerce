@@ -3,9 +3,15 @@
  */
 import { __ } from '@wordpress/i18n';
 import { recordEvent } from '@woocommerce/tracks';
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Form, Spinner, FormRef } from '@woocommerce/components';
+import {
+	Form,
+	Spinner,
+	FormRef,
+	FormContext,
+	WooProductFieldItem,
+} from '@woocommerce/components';
 import {
 	PartialProduct,
 	Product,
@@ -13,6 +19,7 @@ import {
 	WCDataSelector,
 } from '@woocommerce/data';
 import { useParams } from 'react-router-dom';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Internal dependencies
@@ -28,6 +35,9 @@ import './product-page.scss';
 import { validate } from './product-validation';
 import { AttributesSection } from './sections/attributes-section';
 import { ProductFormFooter } from './layout/product-form-footer';
+import { ProductSectionLayout } from './layout/product-section-layout';
+import { Field, Section } from './add-product-page';
+import { Card, CardBody, TextControl } from '@wordpress/components';
 
 const EditProductPage: React.FC = () => {
 	const { productId } = useParams();
@@ -76,6 +86,20 @@ const EditProductPage: React.FC = () => {
 			};
 		}
 	);
+	const [ fields, setFields ] = useState< Field[] >( [] );
+	const [ sections, setSections ] = useState< Section[] >( [] );
+	const getFields = async () => {
+		const data: { fields: Field[]; sections: Section[] } = await apiFetch( {
+			path: `/wc-admin/product-form/data`,
+			method: 'GET',
+		} );
+		setFields( data.fields );
+		setSections( data.sections );
+	};
+	useEffect( () => {
+		recordEvent( 'view_new_product_management_experience' );
+		getFields();
+	}, [] );
 
 	useEffect( () => {
 		// used for determening the wasDeletedUsingAction condition.
@@ -128,15 +152,58 @@ const EditProductPage: React.FC = () => {
 						errors={ {} }
 					>
 						<ProductFormHeader />
-						<ProductFormLayout>
-							<ProductDetailsSection />
-							<PricingSection />
-							<ImagesSection />
-							<ProductInventorySection />
-							<ProductShippingSection product={ product } />
-							<AttributesSection />
-						</ProductFormLayout>
-						<ProductFormFooter />
+						{ ( {
+							getInputProps,
+						}: FormContext< Partial< Product > > ) => (
+							<>
+								{ ' ' }
+								<ProductFormLayout>
+									<ProductDetailsSection />
+									<PricingSection />
+									<ImagesSection />
+									<ProductInventorySection />
+									<ProductShippingSection
+										product={ product }
+									/>
+									<AttributesSection />
+									{ sections.map( ( section ) => (
+										<ProductSectionLayout
+											key={ section.id }
+											title={ section.title }
+											description=""
+										>
+											<Card>
+												<CardBody>
+													<WooProductFieldItem.Slot
+														categoryName={
+															section.title
+														}
+														location="after"
+													/>
+												</CardBody>
+											</Card>
+										</ProductSectionLayout>
+									) ) }
+								</ProductFormLayout>
+								<ProductFormFooter />
+								{ fields.map( ( field ) => (
+									<WooProductFieldItem
+										key={ field.id }
+										fieldName={ field.field }
+										categoryName={ field.section }
+										location="after"
+									>
+										{ field.args.type === 'text' ? (
+											<TextControl
+												label={ field.title }
+												placeholder="New field"
+												{ ...getInputProps( field.id ) }
+											/>
+										) : null }
+									</WooProductFieldItem>
+								) ) }
+							</>
+						) }
 					</Form>
 				) }
 		</div>

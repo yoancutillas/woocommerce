@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
  *                             field is output.
  * }
  */
-function wc_add_product_form_field( $id, $title, $section = 'product_details', $field = 'name', $args = array() ) {
+function wc_add_product_form_field( $id, $title, $section = 'product_details', $field = '', $args = array() ) {
 	global $wp_product_form_fields;
 
 	$wp_product_form_fields[ $id ] = array(

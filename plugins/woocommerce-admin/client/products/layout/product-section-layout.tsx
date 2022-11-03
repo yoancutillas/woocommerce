@@ -1,8 +1,7 @@
 /**
  * External dependencies
  */
-import { Children, isValidElement } from '@wordpress/element';
-import { FormSection } from '@woocommerce/components';
+import { FormSection, WooProductFieldItem } from '@woocommerce/components';
 
 /**
  * Internal dependencies

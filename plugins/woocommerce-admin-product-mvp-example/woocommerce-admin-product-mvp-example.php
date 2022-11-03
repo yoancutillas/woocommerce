@@ -14,8 +14,8 @@ use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
  */
 function add_field() {
 	if ( function_exists( 'wc_add_product_form_field' ) ) {
-		wc_add_product_form_section( 'new-section', 'New section');
-		wc_add_product_form_field( 'test', 'Test', 'Product Details', 'categories', array(
+		wc_add_product_form_section( 'product-add-on', 'Product add-on');
+		wc_add_product_form_field( 'add_on', 'Add on?', 'Product add-on', '', array(
 			'type' => 'text'
 		));
 	}
@@ -51,12 +51,11 @@ add_action( 'admin_enqueue_scripts', 'add_task_register_script' );
 function rest_api_prepare_product( $response, $post ) {
 	$post_id = is_callable( array( $post, 'get_id' ) ) ? $post->get_id() : ( ! empty( $post->ID ) ? $post->ID : null );
 
-	if ( empty( $response->data['test'] ) ) {
+	if ( empty( $response->data['enable_add_on'] ) ) {
 		$data = get_option( 'woocommerce_product_mvp_example_' . strval( $post_id ), array() );
-		error_log( print_r( $data, true ) );
 		if ( ! empty( $data ) ) {
-			$response->data['test'] = $data['test'];
-			$response->data['new_field'] = $data['new_field'];
+			$response->data['enable_add_on'] = $data['enable_add_on'];
+			$response->data['add_on'] = $data['add_on'];
 		}
 	}
 
@@ -66,16 +65,15 @@ function rest_api_prepare_product( $response, $post ) {
 add_filter( 'woocommerce_rest_prepare_product_object', 'rest_api_prepare_product', 10, 2 );
 
 function rest_api_add_to_product( $product, $request, $creating = true ) {
-	$product_id = is_callable( array( $product, 'get_id' ) ) ? $product->get_id() : ( ! empty( $product->ID ) ? $product->ID : null );
-	$params     = $request->get_params();
-	$test      = isset( $params['test'] ) ? $params['test'] : null;
-	$new_field = isset( $params['new_field'] ) ? $params['new-field'] : null;
+	$product_id    = is_callable( array( $product, 'get_id' ) ) ? $product->get_id() : ( ! empty( $product->ID ) ? $product->ID : null );
+	$params        = $request->get_params();
+	$enable_add_on = isset( $params['enable_add_on'] ) ? $params['enable_add_on'] : null;
+	$add_on 	   = isset( $params['add_on'] ) ? $params['add_on'] : null;
 
-	error_log( 'saving: ' . $test . $new_field );
-	if ( $test !== null || $new_field !== null ) {
+	if ( $enable_add_on !== null || $add_on !== null ) {
 		update_option( 'woocommerce_product_mvp_example_' . strval( $product_id ), array(
-			'test' => $test,
-			'new_field' => $new_field
+			'enable_add_on' => $enable_add_on,
+			'add_on' => $add_on
 		));
 	}
 }

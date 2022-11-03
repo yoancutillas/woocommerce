@@ -35,25 +35,31 @@ import { createOrderedChildren, sortFillsByOrder } from './slot-fill-ordering';
  * @param {string}  param0.location  - Location before or after.
  */
 export const WooProductFieldItem: React.FC< {
-	fieldName: string;
+	fieldName?: string;
 	categoryName: string;
 	order?: number;
-	location: 'before' | 'after';
+	location?: 'before' | 'after';
 } > & {
 	Slot: React.FC<
 		Slot.Props & {
-			fieldName: string;
+			fieldName?: string;
 			categoryName: string;
-			location: 'before' | 'after';
+			location?: 'before' | 'after';
 		}
 	>;
 } = ( { children, fieldName, categoryName, location, order = 1 } ) => {
 	const categoryKey = snakeCase( categoryName );
-	const fieldKey = snakeCase( fieldName );
+	let fillName = `woocommerce_product_${ categoryKey }`;
+
+	const fieldKey = fieldName ? snakeCase( fieldName ) : '';
+	if ( fieldKey ) {
+		fillName += '_' + fieldKey;
+	}
+	if ( location ) {
+		fillName += '_' + location;
+	}
 	return (
-		<Fill
-			name={ `woocommerce_product_${ categoryKey }_${ fieldKey }_${ location }` }
-		>
+		<Fill name={ fillName }>
 			{ ( fillProps: Fill.Props ) => {
 				return createOrderedChildren( children, order, fillProps );
 			} }
@@ -68,12 +74,17 @@ WooProductFieldItem.Slot = ( {
 	location,
 } ) => {
 	const categoryKey = snakeCase( categoryName );
-	const fieldKey = snakeCase( fieldName );
+	let fillName = `woocommerce_product_${ categoryKey }`;
+
+	const fieldKey = fieldName ? snakeCase( fieldName ) : '';
+	if ( fieldKey ) {
+		fillName += '_' + fieldKey;
+	}
+	if ( location ) {
+		fillName += '_' + location;
+	}
 	return (
-		<Slot
-			name={ `woocommerce_product_${ categoryKey }_${ fieldKey }_${ location }` }
-			fillProps={ fillProps }
-		>
+		<Slot name={ fillName } fillProps={ fillProps }>
 			{ sortFillsByOrder }
 		</Slot>
 	);
