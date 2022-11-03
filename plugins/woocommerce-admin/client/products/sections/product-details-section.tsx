@@ -122,30 +122,32 @@ export const ProductDetailsSection: React.FC = () => {
 								onBlur: setSkuIfEmpty,
 							} ) }
 						/>
+
+						{ values.id && ! hasNameError() && permalinkPrefix && (
+							<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
+								{ __( 'Product link', 'woocommerce' ) }
+								:&nbsp;
+								<a
+									href={ values.permalink }
+									target="_blank"
+									rel="noreferrer"
+								>
+									{ permalinkPrefix }
+									{ values.slug ||
+										cleanForSlug( values.name ) }
+									{ permalinkSuffix }
+								</a>
+								<Button
+									variant="link"
+									onClick={ () =>
+										setShowProductLinkEditModal( true )
+									}
+								>
+									{ __( 'Edit', 'woocommerce' ) }
+								</Button>
+							</span>
+						) }
 					</ProductFieldLayout>
-					{ values.id && ! hasNameError() && permalinkPrefix && (
-						<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
-							{ __( 'Product link', 'woocommerce' ) }
-							:&nbsp;
-							<a
-								href={ values.permalink }
-								target="_blank"
-								rel="noreferrer"
-							>
-								{ permalinkPrefix }
-								{ values.slug || cleanForSlug( values.name ) }
-								{ permalinkSuffix }
-							</a>
-							<Button
-								variant="link"
-								onClick={ () =>
-									setShowProductLinkEditModal( true )
-								}
-							>
-								{ __( 'Edit', 'woocommerce' ) }
-							</Button>
-						</span>
-					) }
 					<ProductFieldLayout
 						fieldName="categories"
 						categoryName={ 'Product details' }

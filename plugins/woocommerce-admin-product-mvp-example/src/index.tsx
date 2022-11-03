@@ -33,5 +33,5 @@ registerPlugin( 'add-task-content', {
 		);
 	},
 	// @ts-expect-error;
-	scope: 'woocommerce-tasks',
+	scope: 'woocommerce-product-form',
 } );
