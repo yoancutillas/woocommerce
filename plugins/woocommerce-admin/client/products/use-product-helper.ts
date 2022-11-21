@@ -80,7 +80,7 @@ export function useProductHelper() {
 				...updating,
 				[ status ]: true,
 			} );
-			createProduct( {
+			return createProduct( {
 				...product,
 				status,
 			} ).then(
@@ -109,13 +109,9 @@ export function useProductHelper() {
 						...updating,
 						[ status ]: false,
 					} );
-					if ( ! skipRedirect ) {
-						navigateTo( {
-							url:
-								'admin.php?page=wc-admin&path=/product/' +
-								newProduct.id,
-						} );
-					}
+					return newProduct;
+					// if ( ! skipRedirect ) {
+					// }
 				},
 				() => {
 					if ( ! skipNotice ) {
