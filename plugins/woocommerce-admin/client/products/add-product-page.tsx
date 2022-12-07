@@ -7,6 +7,7 @@ import {
 	Form,
 	FormContext,
 	WooProductFieldItem,
+	WooProductSectionItem,
 } from '@woocommerce/components';
 import { Card, CardBody, TextControl } from '@wordpress/components';
 import { Product } from '@woocommerce/data';
@@ -26,7 +27,6 @@ import './product-page.scss';
 import { validate } from './product-validation';
 import { AttributesSection } from './sections/attributes-section';
 import { ProductFormFooter } from './layout/product-form-footer';
-import { WooProductFieldItem } from './layout/woo-product-field-item';
 import { ProductSectionLayout } from './layout/product-section-layout';
 
 export type Field = {
@@ -76,41 +76,15 @@ const AddProductPage: React.FC = () => {
 				errors={ {} }
 				validate={ validate }
 			>
-				<ProductFormHeader />
 				{ ( { getInputProps }: FormContext< Partial< Product > > ) => (
 					<>
+						<ProductFormHeader />
 						<ProductFormLayout>
-							<ProductDetailsSection />
-							<PricingSection />
-							<ImagesSection />
-							<ProductInventorySection />
-							<ProductShippingSection />
-							<AttributesSection />
-							{ sections.map( ( section ) => (
-								<ProductSectionLayout
-									key={ section.id }
-									title={ section.title }
-									description=""
-								>
-									<Card>
-										<CardBody>
-											<WooProductFieldItem.Slot
-												categoryName={ section.title }
-												location="after"
-											/>
-										</CardBody>
-									</Card>
-								</ProductSectionLayout>
-							) ) }
+							<WooProductSectionItem.Slot id="main-form" />
 						</ProductFormLayout>
 						<ProductFormFooter />
 						{ fields.map( ( field ) => (
-							<WooProductFieldItem
-								key={ field.id }
-								fieldName={ field.field }
-								categoryName={ field.section }
-								location="after"
-							>
+							<WooProductFieldItem id={ field.section }>
 								{ field.args.type === 'text' ? (
 									<TextControl
 										label={ field.title }
@@ -123,6 +97,30 @@ const AddProductPage: React.FC = () => {
 					</>
 				) }
 			</Form>
+			<WooProductSectionItem id="main-form">
+				<ProductDetailsSection />
+			</WooProductSectionItem>
+			<WooProductSectionItem id="main-form">
+				<PricingSection />
+			</WooProductSectionItem>
+			<WooProductSectionItem id="main-form">
+				<ImagesSection />
+			</WooProductSectionItem>
+			{ sections.map( ( section ) => (
+				<WooProductSectionItem id="main-form">
+					<ProductSectionLayout
+						key={ section.id }
+						title={ section.title }
+						description=""
+					>
+						<Card>
+							<CardBody>
+								<WooProductFieldItem.Slot id={ section.id } />
+							</CardBody>
+						</Card>
+					</ProductSectionLayout>
+				</WooProductSectionItem>
+			) ) }
 		</div>
 	);
 };

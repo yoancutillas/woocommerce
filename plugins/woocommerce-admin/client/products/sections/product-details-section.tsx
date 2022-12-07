@@ -1,22 +1,16 @@
 /**
  * External dependencies
  */
-import {
-	CheckboxControl,
-	Button,
-	TextControl,
-	Card,
-	CardBody,
-} from '@wordpress/components';
+import { Button, TextControl, Card, CardBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { cleanForSlug } from '@wordpress/url';
 import {
-	Link,
 	useFormContext,
 	__experimentalRichTextEditor as RichTextEditor,
 	__experimentalTooltip as Tooltip,
+	WooProductFieldItem,
 } from '@woocommerce/components';
 import interpolateComponents from '@automattic/interpolate-components';
 import {
@@ -92,167 +86,111 @@ export const ProductDetailsSection: React.FC = () => {
 		>
 			<Card>
 				<CardBody>
-					<ProductFieldLayout
-						fieldName="name"
-						categoryName={ 'Product details' }
-					>
-						<TextControl
-							label={ interpolateComponents( {
-								mixedString: __(
-									'Name {{required/}}',
-									'woocommerce'
-								),
-								components: {
-									required: (
-										<span className="woocommerce-product-form__optional-input">
-											{ __(
-												'(required)',
-												'woocommerce'
-											) }
-										</span>
-									),
-								},
-							} ) }
-							name={ `${ PRODUCT_DETAILS_SLUG }-name` }
-							placeholder={ __(
-								'e.g. 12 oz Coffee Mug',
-								'woocommerce'
-							) }
-							{ ...getInputProps( 'name', {
-								onBlur: setSkuIfEmpty,
-							} ) }
-						/>
-
-						{ values.id && ! hasNameError() && permalinkPrefix && (
-							<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
-								{ __( 'Product link', 'woocommerce' ) }
-								:&nbsp;
-								<a
-									href={ values.permalink }
-									target="_blank"
-									rel="noreferrer"
-								>
-									{ permalinkPrefix }
-									{ values.slug ||
-										cleanForSlug( values.name ) }
-									{ permalinkSuffix }
-								</a>
-								<Button
-									variant="link"
-									onClick={ () =>
-										setShowProductLinkEditModal( true )
-									}
-								>
-									{ __( 'Edit', 'woocommerce' ) }
-								</Button>
-							</span>
-						) }
-					</ProductFieldLayout>
-					<ProductFieldLayout
-						fieldName="categories"
-						categoryName={ 'Product details' }
-					>
-						<CategoryField
-							label={ __( 'Categories', 'woocommerce' ) }
-							placeholder={ __(
-								'Search or create category…',
-								'woocommerce'
-							) }
-							{ ...getInputProps<
-								Pick< ProductCategory, 'id' | 'name' >[]
-							>( 'categories' ) }
-						/>
-					</ProductFieldLayout>
-					<CheckboxControl
-						label={
-							<>
-								{ __( 'Feature this product', 'woocommerce' ) }
-								<Tooltip
-									text={ interpolateComponents( {
-										mixedString: __(
-											'Include this product in a featured section on your website with a widget or shortcode. {{moreLink/}}',
-											'woocommerce'
-										),
-										components: {
-											moreLink: (
-												<Link
-													href="https://woocommerce.com/document/woocommerce-shortcodes/#products"
-													target="_blank"
-													type="external"
-													onClick={ () =>
-														recordEvent(
-															'add_product_learn_more',
-															{
-																category:
-																	PRODUCT_DETAILS_SLUG,
-															}
-														)
-													}
-												>
-													{ __(
-														'Learn more',
-														'woocommerce'
-													) }
-												</Link>
-											),
-										},
-									} ) }
-								/>
-							</>
-						}
-						{ ...getCheckboxControlProps(
-							'featured',
-							getCheckboxTracks( 'featured' )
-						) }
-					/>
-					{ showProductLinkEditModal && (
-						<EditProductLinkModal
-							permalinkPrefix={ permalinkPrefix || '' }
-							permalinkSuffix={ permalinkSuffix || '' }
-							product={ values }
-							onCancel={ () =>
-								setShowProductLinkEditModal( false )
-							}
-							onSaved={ () =>
-								setShowProductLinkEditModal( false )
-							}
-						/>
-					) }
-					<RichTextEditor
-						label={ __( 'Summary', 'woocommerce' ) }
-						blocks={ summaryBlocks }
-						onChange={ ( blocks ) => {
-							setSummaryBlocks( blocks );
-							if ( ! summaryBlocks.length ) {
-								return;
-							}
-							setValue(
-								'short_description',
-								serialize( blocks )
-							);
-						} }
-						placeholder={ __(
-							"Summarize this product in 1-2 short sentences. We'll show it at the top of the page.",
-							'woocommerce'
-						) }
-					/>
-					<RichTextEditor
-						label={ __( 'Description', 'woocommerce' ) }
-						blocks={ descriptionBlocks }
-						onChange={ ( blocks ) => {
-							setDescriptionBlocks( blocks );
-							if ( ! descriptionBlocks.length ) {
-								return;
-							}
-							setValue( 'description', serialize( blocks ) );
-						} }
-						placeholder={ __(
-							'Describe this product. What makes it unique? What are its most important features?',
-							'woocommerce'
-						) }
-					/>
+					<WooProductFieldItem.Slot id="product-details" />
 				</CardBody>
 			</Card>
+			<WooProductFieldItem id="product-details" order={ 0 }>
+				<>
+					<TextControl
+						label={ interpolateComponents( {
+							mixedString: __(
+								'Name {{required/}}',
+								'woocommerce'
+							),
+							components: {
+								required: (
+									<span className="woocommerce-product-form__optional-input">
+										{ __( '(required)', 'woocommerce' ) }
+									</span>
+								),
+							},
+						} ) }
+						name={ `${ PRODUCT_DETAILS_SLUG }-name` }
+						placeholder={ __(
+							'e.g. 12 oz Coffee Mug',
+							'woocommerce'
+						) }
+						{ ...getInputProps( 'name', {
+							onBlur: setSkuIfEmpty,
+						} ) }
+					/>
+
+					{ values.id && ! hasNameError() && permalinkPrefix && (
+						<span className="woocommerce-product-form__secondary-text product-details-section__product-link">
+							{ __( 'Product link', 'woocommerce' ) }
+							:&nbsp;
+							<a
+								href={ values.permalink }
+								target="_blank"
+								rel="noreferrer"
+							>
+								{ permalinkPrefix }
+								{ values.slug || cleanForSlug( values.name ) }
+								{ permalinkSuffix }
+							</a>
+							<Button
+								variant="link"
+								onClick={ () =>
+									setShowProductLinkEditModal( true )
+								}
+							>
+								{ __( 'Edit', 'woocommerce' ) }
+							</Button>
+						</span>
+					) }
+				</>
+			</WooProductFieldItem>
+			<WooProductFieldItem id="product-details" order={ 1 }>
+				<ProductFieldLayout
+					fieldName="categories"
+					categoryName={ 'Product details' }
+				>
+					<CategoryField
+						label={ __( 'Categories', 'woocommerce' ) }
+						placeholder={ __(
+							'Search or create category…',
+							'woocommerce'
+						) }
+						{ ...getInputProps<
+							Pick< ProductCategory, 'id' | 'name' >[]
+						>( 'categories' ) }
+					/>
+				</ProductFieldLayout>
+			</WooProductFieldItem>
+			<WooProductFieldItem id="product-details" order={ 2 }>
+				<RichTextEditor
+					label={ __( 'Summary', 'woocommerce' ) }
+					blocks={ summaryBlocks }
+					onChange={ ( blocks ) => {
+						setSummaryBlocks( blocks );
+						if ( ! summaryBlocks.length ) {
+							return;
+						}
+						setValue( 'short_description', serialize( blocks ) );
+					} }
+					placeholder={ __(
+						"Summarize this product in 1-2 short sentences. We'll show it at the top of the page.",
+						'woocommerce'
+					) }
+				/>
+			</WooProductFieldItem>
+			<WooProductFieldItem id="product-details" order={ 3 }>
+				<RichTextEditor
+					label={ __( 'Description', 'woocommerce' ) }
+					blocks={ descriptionBlocks }
+					onChange={ ( blocks ) => {
+						setDescriptionBlocks( blocks );
+						if ( ! descriptionBlocks.length ) {
+							return;
+						}
+						setValue( 'description', serialize( blocks ) );
+					} }
+					placeholder={ __(
+						'Describe this product. What makes it unique? What are its most important features?',
+						'woocommerce'
+					) }
+				/>
+			</WooProductFieldItem>
 		</ProductSectionLayout>
 	);
 };

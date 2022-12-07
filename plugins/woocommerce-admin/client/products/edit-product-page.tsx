@@ -151,12 +151,11 @@ const EditProductPage: React.FC = () => {
 						validate={ validate }
 						errors={ {} }
 					>
-						<ProductFormHeader />
 						{ ( {
 							getInputProps,
 						}: FormContext< Partial< Product > > ) => (
 							<>
-								{ ' ' }
+								<ProductFormHeader />
 								<ProductFormLayout>
 									<ProductDetailsSection />
 									<PricingSection />
@@ -175,10 +174,7 @@ const EditProductPage: React.FC = () => {
 											<Card>
 												<CardBody>
 													<WooProductFieldItem.Slot
-														categoryName={
-															section.title
-														}
-														location="after"
+														id={ section.id }
 													/>
 												</CardBody>
 											</Card>
@@ -187,12 +183,7 @@ const EditProductPage: React.FC = () => {
 								</ProductFormLayout>
 								<ProductFormFooter />
 								{ fields.map( ( field ) => (
-									<WooProductFieldItem
-										key={ field.id }
-										fieldName={ field.field }
-										categoryName={ field.section }
-										location="after"
-									>
+									<WooProductFieldItem id={ field.section }>
 										{ field.args.type === 'text' ? (
 											<TextControl
 												label={ field.title }

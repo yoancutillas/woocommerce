@@ -23,11 +23,7 @@ const NewField: React.FC = () => {
 registerPlugin( 'add-task-content', {
 	render: () => {
 		return (
-			<WooProductFieldItem
-				fieldName="name"
-				categoryName="Product details"
-				location="after"
-			>
+			<WooProductFieldItem id="product-details" order={ 2 }>
 				<NewField />
 			</WooProductFieldItem>
 		);

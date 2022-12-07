@@ -9,7 +9,10 @@ import { snakeCase } from 'lodash';
 /**
  * Internal dependencies
  */
-import { createOrderedChildren, sortFillsByOrder } from './slot-fill-ordering';
+import {
+	createOrderedChildren,
+	sortFillsByOrder,
+} from '../woo-product-field-item/slot-fill-ordering';
 
 // TODO: move this to a published JS package once ready.
 
@@ -29,12 +32,9 @@ import { createOrderedChildren, sortFillsByOrder } from './slot-fill-ordering';
  * } );
  * @param {Object}  param0
  * @param {Array}   param0.children  - Node children.
- * @param {string}  param0.fieldName - Field name.
- * @param {string}  param0.categoryName - Category name.
  * @param {number}  param0.order - Order of Fill component.
- * @param {string}  param0.location  - Location before or after.
  */
-export const WooProductFieldItem: React.FC< {
+export const WooProductSectionItem: React.FC< {
 	id: string;
 	order?: number;
 } > & {
@@ -43,10 +43,8 @@ export const WooProductFieldItem: React.FC< {
 			id: string;
 		}
 	>;
-} = ( { children, id, order = 1 } ) => {
-	let fillName = `woocommerce_product_field`;
-
-	fillName += '_' + id;
+} = ( { id, children, order = 1 } ) => {
+	let fillName = `woocommerce_product_section_${ id }`;
 
 	return (
 		<Fill name={ fillName }>
@@ -57,10 +55,9 @@ export const WooProductFieldItem: React.FC< {
 	);
 };
 
-WooProductFieldItem.Slot = ( { fillProps, id } ) => {
-	let fillName = `woocommerce_product_field`;
+WooProductSectionItem.Slot = ( { fillProps, id } ) => {
+	let fillName = `woocommerce_product_section_${ id }`;
 
-	fillName += '_' + id;
 	return (
 		<Slot name={ fillName } fillProps={ fillProps }>
 			{ sortFillsByOrder }
