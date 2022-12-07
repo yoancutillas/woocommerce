@@ -4,7 +4,7 @@
 import React from 'react';
 import { Slot, Fill } from '@wordpress/components';
 import { createElement } from '@wordpress/element';
-import { snakeCase } from 'lodash';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -63,7 +63,17 @@ WooProductFieldItem.Slot = ( { fillProps, id } ) => {
 	fillName += '_' + id;
 	return (
 		<Slot name={ fillName } fillProps={ fillProps }>
-			{ sortFillsByOrder }
+			{ ( fills ) => {
+				const filteredFills = applyFilters(
+					'woo_product_field_fills',
+					fills,
+					fillName
+				) as JSX.Element[][];
+				if ( sortFillsByOrder ) {
+					return sortFillsByOrder( filteredFills );
+				}
+				return null;
+			} }
 		</Slot>
 	);
 };
