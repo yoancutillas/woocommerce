@@ -15,7 +15,7 @@ use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
 function add_field() {
 	if ( function_exists( 'wc_add_product_form_field' ) ) {
 		wc_add_product_form_section( 'product-add-on', 'Product add-on');
-		wc_add_product_form_field( 'add_on', 'Add on?', 'Product add-on', '', array(
+		wc_add_product_form_field( 'add_on', 'Add on?', 'product-add-on', '', array(
 			'type' => 'text'
 		));
 	}
