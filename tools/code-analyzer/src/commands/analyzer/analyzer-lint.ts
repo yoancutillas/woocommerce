@@ -48,45 +48,74 @@ const program = new Command()
 	.action( async ( compare, sinceVersion, options ) => {
 		const { skipSchemaCheck = false, source, base, outputStyle } = options;
 
-		const changes = await scanForChanges(
-			compare,
-			sinceVersion,
-			skipSchemaCheck,
-			source,
-			base,
-			outputStyle
+		// const changes = await scanForChanges(
+		// 	compare,
+		// 	sinceVersion,
+		// 	skipSchemaCheck,
+		// 	source,
+		// 	base,
+		// 	outputStyle
+		// );
+
+		// if ( changes.templates.size ) {
+		printTemplateResults(
+			[
+				{
+					filePath: 'path/to/file.php',
+					code: 'code',
+					message: 'message',
+				},
+			],
+			outputStyle,
+			'TEMPLATES',
+			Logger.notice
 		);
+		// }
 
-		if ( changes.templates.size ) {
-			printTemplateResults(
-				Array.from( changes.templates.values() ),
-				outputStyle,
-				'TEMPLATES',
-				Logger.notice
-			);
-		}
+		// if ( changes.hooks.size ) {
+		printHookResults(
+			[
+				{
+					filePath: 'Hello',
+					name: 'World',
+					description: 'Description',
+					hookType: 'hook type',
+					changeType: 'new',
+					version: '1.2.3',
+					ghLink: 'https://example.com',
+				},
+			],
+			outputStyle,
+			'HOOKS',
+			Logger.notice
+		);
+		// }
 
-		if ( changes.hooks.size ) {
-			printHookResults(
-				Array.from( changes.hooks.values() ),
-				outputStyle,
-				'HOOKS',
-				Logger.notice
-			);
-		}
+		// if ( changes.schema.filter( ( s ) => ! s.areEqual ).length ) {
+		printSchemaChange(
+			[
+				{
+					areEqual: true,
+					method: 'Hello World!',
+					name: 'name',
+					description: 'description',
+					base: 'base',
+					compare: 'compare',
+				},
+			],
+			sinceVersion,
+			outputStyle,
+			Logger.notice
+		);
+		// }
 
-		if ( changes.schema.filter( ( s ) => ! s.areEqual ).length ) {
-			printSchemaChange(
-				changes.schema,
-				sinceVersion,
-				outputStyle,
-				Logger.notice
-			);
-		}
-
-		if ( changes.db ) {
-			printDatabaseUpdates( changes.db, outputStyle, Logger.notice );
-		}
+		// if ( changes.db ) {
+		printDatabaseUpdates(
+			{ updateFunctionName: 'Hello', updateFunctionVersion: 'World!' },
+			outputStyle,
+			Logger.notice
+		);
+		// }
 	} );
 
 program.parse( process.argv );
