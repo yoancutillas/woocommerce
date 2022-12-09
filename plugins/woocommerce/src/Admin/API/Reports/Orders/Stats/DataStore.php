@@ -293,7 +293,7 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 		 * parent::update_intervals_sql_params() modifies $query_args.
 		 */
 		$cache_key = $this->get_cache_key( $query_args );
-		$data      = $this->get_cached_data( $cache_key );
+		$data      = false; //$this->get_cached_data( $cache_key );
 
 		if ( false === $data ) {
 			$this->initialize_queries();
@@ -324,6 +324,17 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 						) order_coupon_lookup
 						ON order_coupon_lookup.order_id = {$wpdb->prefix}wc_order_stats.order_id";
 
+			$date_fields_join = "LEFT JOIN (
+				SELECT
+					post_id,
+					meta_key,
+					meta_value AS date_paid
+				FROM
+					{$wpdb->prefix}postmeta
+				) postmeta
+				ON postmeta.post_id = {$wpdb->prefix}wc_order_stats.order_id
+				and postmeta.meta_key = '_date_paid'";
+
 			// Additional filtering for Orders report.
 			$this->orders_stats_sql_filter( $query_args );
 			$this->total_query->add_sql_clause( 'select', $selections );
@@ -336,6 +347,8 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 			if ( null === $totals ) {
 				return new \WP_Error( 'woocommerce_analytics_revenue_result_failed', __( 'Sorry, fetching revenue data failed.', 'woocommerce' ) );
 			}
+
+			//error_log(print_r($this->total_query, true));
 
 			// phpcs:ignore Generic.Commenting.Todo.TaskFound
 			// @todo Remove these assignements when refactoring segmenter classes to use query objects.
@@ -362,6 +375,7 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 
 			$this->interval_query->add_sql_clause( 'select', $this->get_sql_clause( 'select' ) . ' AS time_interval' );
 			$this->interval_query->add_sql_clause( 'left_join', $coupon_join );
+			$this->interval_query->add_sql_clause( 'left_join', $date_fields_join );
 			$this->interval_query->add_sql_clause( 'where_time', $where_time );
 			$db_intervals = $wpdb->get_col(
 				$this->interval_query->get_query_statement()
@@ -371,7 +385,11 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 			$expected_interval_count = TimeInterval::intervals_between( $query_args['after'], $query_args['before'], $query_args['interval'] );
 			$total_pages             = (int) ceil( $expected_interval_count / $params['per_page'] );
 
+			// error_log('totals');
+			// error_log(print_r($totals, true));
+
 			if ( $query_args['page'] < 1 || $query_args['page'] > $total_pages ) {
+				error_log('returning');
 				return $data;
 			}
 
@@ -382,6 +400,9 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 			if ( '' !== $selections ) {
 				$this->interval_query->add_sql_clause( 'select', ', ' . $selections );
 			}
+
+			error_log(print_r($this->interval_query->get_query_statement(), true));
+
 			$intervals = $wpdb->get_results(
 				$this->interval_query->get_query_statement(),
 				ARRAY_A
