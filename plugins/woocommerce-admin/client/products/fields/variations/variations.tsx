@@ -31,7 +31,7 @@ import './variations.scss';
  *
  * @see https://github.com/woocommerce/woocommerce/blob/trunk/packages/js/components/src/pagination/index.js#L12
  */
-const DEFAULT_PER_PAGE_OPTION = 25;
+const DEFAULT_PER_PAGE_OPTION = 5;
 
 export const Variations: React.FC = () => {
 	const [ currentPage, setCurrentPage ] = useState( 1 );
@@ -124,7 +124,8 @@ export const Variations: React.FC = () => {
 				className="woocommerce-product-variations__footer"
 				page={ currentPage }
 				perPage={ perPage }
-				total={ totalCount }
+				// We add this to see the pagination component when there are not enough variations.
+				total={ totalCount < perPage ? perPage + 1 : totalCount }
 				showPagePicker={ false }
 				onPageChange={ setCurrentPage }
 				onPerPageChange={ setPerPage }
