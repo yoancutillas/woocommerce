@@ -54,6 +54,9 @@ jobs:
             - name: 'Insert NEXT_CHANGELOG contents into readme.txt'
               run: php .github/workflows/scripts/release-changelog.php
 
+            - name: 'Discard pnpm lock file changes'
+              run: git checkout pnpm-lock.yaml
+
             - name: 'git add readme.txt'
               run: git add plugins/woocommerce/readme.txt
 
