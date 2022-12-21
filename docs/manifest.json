@@ -1,0 +1,14 @@
+{
+	"foo": {
+		"title": "Temporary Foo Title",
+		"slug": "foo",
+		"markdown_source": "../DEVLOPMENT.md",
+		"parent": null
+	},
+	"foo/bar": {
+		"title": "Temporary Bar Title",
+		"slug": "bar",
+		"markdown_source": "../CODE_OF_CONDUCT.md",
+		"parent": "foo"
+	}
+}
