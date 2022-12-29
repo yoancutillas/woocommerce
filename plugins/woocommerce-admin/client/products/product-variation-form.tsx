@@ -52,7 +52,7 @@ export const ProductVariationForm: React.FC< {
 			<ProductVariationFormHeader />
 			<ProductFormLayout key={ productVariation.id }>
 				<ProductFormTab name="general" title="General">
-					<ProductVariationDetailsSection />
+					<ProductVariationDetailsSection parent={ product } />
 				</ProductFormTab>
 				<ProductFormTab name="pricing" title="Pricing">
 					<PricingSection parent={ product } />
