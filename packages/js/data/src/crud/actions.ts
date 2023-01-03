@@ -183,20 +183,25 @@ export const createDispatchActions = ( {
 
 	const updateItem = function* (
 		idQuery: IdQuery,
-		query: Partial< ItemQuery >
+		data: Partial< ItemQuery >
 	) {
-		const urlParameters = getUrlParameters( namespace, idQuery );
-		const { id, key } = parseId( idQuery, urlParameters );
+		const { key } = parseId(
+			idQuery,
+			getUrlParameters( namespace, idQuery )
+		);
 
 		try {
+			const templatePath = `${ namespace }/{id}`;
+			const urlParameters = getUrlParameters( templatePath, idQuery );
+			const query = cleanQuery(
+				idQuery as Partial< ItemQuery >,
+				templatePath
+			);
+
 			const item: Item = yield apiFetch( {
-				path: getRestPath(
-					`${ namespace }/${ id }`,
-					{},
-					urlParameters
-				),
+				path: getRestPath( templatePath, query, urlParameters ),
 				method: 'PUT',
-				data: query,
+				data,
 			} );
 
 			yield updateItemSuccess( key, item );
