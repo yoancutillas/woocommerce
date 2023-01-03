@@ -137,6 +137,8 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 	 * @return WP_Error|WC_Data
 	 */
 	protected function prepare_object_for_database( $request, $creating = false ) {
+		$context = empty( $request['context'] ) ? 'view' : $request['context'];
+
 		if ( isset( $request['id'] ) ) {
 			$variation = wc_get_product( absint( $request['id'] ) );
 		} else {
@@ -175,7 +177,7 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 		}
 
 		// Downloads.
-		if ( $variation->get_downloadable() ) {
+		if ( $variation->get_downloadable( $context ) ) {
 			// Downloadable files.
 			if ( isset( $request['downloads'] ) && is_array( $request['downloads'] ) ) {
 				$variation = $this->save_downloadable_files( $variation, $request['downloads'] );
@@ -208,11 +210,11 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 			$variation->set_backorders( $request['backorders'] );
 		}
 
-		if ( $variation->get_manage_stock() ) {
+		if ( $variation->get_manage_stock( $context ) ) {
 			if ( isset( $request['stock_quantity'] ) ) {
 				$variation->set_stock_quantity( $request['stock_quantity'] );
 			} elseif ( isset( $request['inventory_delta'] ) ) {
-				$stock_quantity  = wc_stock_amount( $variation->get_stock_quantity() );
+				$stock_quantity  = wc_stock_amount( $variation->get_stock_quantity( $context ) );
 				$stock_quantity += wc_stock_amount( $request['inventory_delta'] );
 				$variation->set_stock_quantity( $stock_quantity );
 			}
@@ -269,7 +271,7 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 		// Update taxonomies.
 		if ( isset( $request['attributes'] ) ) {
 			$attributes = array();
-			$parent     = wc_get_product( $variation->get_parent_id() );
+			$parent     = wc_get_product( $variation->get_parent_id( $context ) );
 
 			if ( ! $parent ) {
 				return new WP_Error(
