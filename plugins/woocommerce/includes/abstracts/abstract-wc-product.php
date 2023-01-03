@@ -1693,11 +1693,12 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 	/**
 	 * Returns whether or not the product is stock managed.
 	 *
+	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return bool
 	 */
-	public function managing_stock() {
+	public function managing_stock( $context = 'view' ) {
 		if ( 'yes' === get_option( 'woocommerce_manage_stock' ) ) {
-			return $this->get_manage_stock();
+			return $this->get_manage_stock( $context );
 		}
 		return false;
 	}
