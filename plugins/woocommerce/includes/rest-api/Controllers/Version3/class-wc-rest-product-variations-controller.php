@@ -62,7 +62,7 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 	 * @return WP_REST_Response
 	 */
 	public function prepare_object_for_response( $object, $request ) {
-		$context  = empty( $request['context'] ) ? 'view' : $request['context'];
+		$context = empty( $request['context'] ) ? 'view' : $request['context'];
 
 		$data = array(
 			'id'                    => $object->get_id( $context ),
@@ -352,8 +352,8 @@ class WC_REST_Product_Variations_Controller extends WC_REST_Product_Variations_V
 	/**
 	 * Get the image for a product variation.
 	 *
-	 * @param WC_Product_Variation $variation Variation data.
-	 * @param string $context Request context param.
+	 * @param  WC_Product_Variation $variation Variation data.
+	 * @param  string               $context What the value is for. Valid values are view and edit.
 	 * @return array
 	 */
 	protected function get_image( $variation, $context = 'view' ) {
