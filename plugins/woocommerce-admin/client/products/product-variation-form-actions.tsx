@@ -36,7 +36,7 @@ export const ProductVariationFormActions: React.FC = () => {
 	const onSave = async () => {
 		setIsSaving( true );
 		updateProductVariation< Promise< ProductVariation > >(
-			{ id: variationId, product_id: productId },
+			{ id: variationId, product_id: productId, context: 'edit' },
 			{
 				...values,
 				manage_stock:
