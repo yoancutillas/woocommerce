@@ -3,6 +3,7 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { Button } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -10,7 +11,10 @@ import { __ } from '@wordpress/i18n';
 import './index.scss';
 
 const MyExamplePage = () => (
-	<h2>{ __( 'My Example Extension', '{{textdomain}}' ) }</h2>
+	<>
+		<h2>{ __( 'My Example Extension', '{{textdomain}}' ) }</h2>
+		<Button>Im a button</Button>
+	</>
 );
 
 addFilter( 'woocommerce_admin_pages_list', '{{slug}}', ( pages ) => {

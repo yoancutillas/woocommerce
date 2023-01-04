@@ -1,7 +1,11 @@
 module.exports = {
 	templatesPath: __dirname,
 	defaultValues: {
-		npmDependencies: [ '@wordpress/hooks', '@wordpress/i18n' ],
+		npmDependencies: [
+			'@wordpress/hooks',
+			'@wordpress/i18n',
+			'@wordpress/components',
+		],
 		npmDevDependencies: [
 			'@woocommerce/dependency-extraction-webpack-plugin',
 			'@woocommerce/eslint-plugin',
