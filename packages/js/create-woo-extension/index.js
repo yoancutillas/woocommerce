@@ -4,7 +4,7 @@ module.exports = {
 		npmDependencies: [
 			'@wordpress/hooks',
 			'@wordpress/i18n',
-			'@wordpress/components',
+			'@woocommerce/components',
 		],
 		npmDevDependencies: [
 			'@woocommerce/dependency-extraction-webpack-plugin',

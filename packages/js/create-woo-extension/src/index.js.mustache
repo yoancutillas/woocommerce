@@ -3,7 +3,7 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-import { Button } from '@wordpress/components';
+import { Flag } from '@wooocommerce/components';
 
 /**
  * Internal dependencies
@@ -13,7 +13,7 @@ import './index.scss';
 const MyExamplePage = () => (
 	<>
 		<h2>{ __( 'My Example Extension', '{{textdomain}}' ) }</h2>
-		<Button>Im a button</Button>
+		<Flag code="VU" size={ 48 } />
 	</>
 );
 
