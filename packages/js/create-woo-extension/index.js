@@ -10,7 +10,7 @@ module.exports = {
 			'@woocommerce/dependency-extraction-webpack-plugin',
 			'@woocommerce/eslint-plugin',
 			'@wordpress/prettier-config',
-			'@wordpress/scripts',
+			'@wordpress/scripts@24.6.0',
 		],
 		namespace: 'extension',
 		license: 'GPL-3.0+',
