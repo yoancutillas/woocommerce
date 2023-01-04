@@ -319,7 +319,7 @@ class WC_Product_Variation extends WC_Product_Simple {
 		$value = $this->get_prop( 'manage_stock', $context );
 
 		// Inherit value from parent.
-		if ( 'view' === $context && false === $value && true === wc_string_to_bool( $this->parent_data['manage_stock'] ) ) {
+		if ( false === $value && true === wc_string_to_bool( $this->parent_data['manage_stock'] ) ) {
 			$value = 'parent';
 		}
 		return $value;
