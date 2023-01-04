@@ -222,15 +222,6 @@ export function ProductShippingSection( {
 		return formatNumber( value );
 	}
 
-	function setValueForVariation(
-		name: string,
-		currentValue?: string,
-		newValue?: string
-	) {
-		if ( currentValue || ! productVariation || ! newValue ) return;
-		setValue( name, newValue );
-	}
-
 	return (
 		<ProductSectionLayout
 			title={ __( 'Shipping', 'woocommerce' ) }
@@ -330,11 +321,6 @@ export function ProductShippingSection( {
 											) }
 											onFocus={ () => {
 												setHighlightSide( 'A' );
-												setValueForVariation(
-													'dimensions.width',
-													inputWidthProps.value as string,
-													product?.dimensions?.width
-												);
 											} }
 										/>
 									</BaseControl>
@@ -360,11 +346,6 @@ export function ProductShippingSection( {
 											) }
 											onFocus={ () => {
 												setHighlightSide( 'B' );
-												setValueForVariation(
-													'dimensions.length',
-													inputLengthProps.value as string,
-													product?.dimensions?.length
-												);
 											} }
 										/>
 									</BaseControl>
@@ -390,11 +371,6 @@ export function ProductShippingSection( {
 											) }
 											onFocus={ () => {
 												setHighlightSide( 'C' );
-												setValueForVariation(
-													'dimensions.height',
-													inputHeightProps.value as string,
-													product?.dimensions?.height
-												);
 											} }
 										/>
 									</BaseControl>
@@ -417,13 +393,6 @@ export function ProductShippingSection( {
 											placeholder={ getPlaceholderForVariation(
 												product?.weight
 											) }
-											onFocus={ () => {
-												setValueForVariation(
-													'weight',
-													inputWeightProps.value as string,
-													product?.weight
-												);
-											} }
 										/>
 									</BaseControl>
 								</div>

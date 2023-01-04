@@ -250,15 +250,6 @@ export const PricingSection: React.FC< PricingSectionProps > = ( {
 		);
 	}
 
-	function setValueForVariation(
-		name: string,
-		currentValue?: string,
-		newValue?: string
-	) {
-		if ( currentValue || ! newValue ) return;
-		setValue( name, newValue );
-	}
-
 	return (
 		<ProductSectionLayout
 			title={ __( 'Pricing', 'woocommerce' ) }
@@ -305,17 +296,6 @@ export const PricingSection: React.FC< PricingSectionProps > = ( {
 							placeholder={ getPlaceholderForVariation(
 								parent?.regular_price
 							) }
-							onFocus={ (
-								event: React.FocusEvent< HTMLInputElement >
-							) => {
-								setValueForVariation(
-									'regular_price',
-									regularPriceProps?.value as string,
-									parent?.regular_price
-								);
-
-								currencyInputProps.onFocus( event );
-							} }
 						/>
 					</BaseControl>
 					{ ! isTaxSettingsResolving && (
@@ -340,17 +320,6 @@ export const PricingSection: React.FC< PricingSectionProps > = ( {
 							placeholder={ getPlaceholderForVariation(
 								parent?.sale_price
 							) }
-							onFocus={ (
-								event: React.FocusEvent< HTMLInputElement >
-							) => {
-								setValueForVariation(
-									'sale_price',
-									salePriceProps?.value as string,
-									parent?.sale_price
-								);
-
-								currencyInputProps.onFocus( event );
-							} }
 						/>
 					</BaseControl>
 
