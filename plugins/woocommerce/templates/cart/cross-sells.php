@@ -18,7 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( $cross_sells ) : ?>
-
+	<!-- This is an HTML comment to test template change detection code. -->
 	<div class="cross-sells">
 		<?php
 		$heading = apply_filters( 'woocommerce_product_cross_sells_products_heading', __( 'You may be interested in&hellip;', 'woocommerce' ) );
