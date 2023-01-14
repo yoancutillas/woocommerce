@@ -38,6 +38,8 @@ import { EditProductLinkModal } from '../shared/edit-product-link-modal';
 import { getCheckboxTracks } from './utils';
 import { ProductSectionLayout } from '../layout/product-section-layout';
 
+import '../fills';
+
 const PRODUCT_DETAILS_SLUG = 'product-details';
 
 export const ProductDetailsSection: React.FC = () => {
