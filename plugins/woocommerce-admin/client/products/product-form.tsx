@@ -9,6 +9,7 @@ import {
 } from '@woocommerce/components';
 import { PartialProduct, Product } from '@woocommerce/data';
 import { Ref } from 'react';
+import { PluginArea } from '@wordpress/plugins';
 
 /**
  * Internal dependencies
@@ -88,6 +89,8 @@ export const ProductForm: React.FC< {
 					) }
 				</ProductFormLayout>
 				<ProductFormFooter />
+				{ /* @ts-expect-error 'scope' does exist. @types/wordpress__plugins is outdated. */ }
+				<PluginArea scope="woocommerce-product-editor" />
 			</Form>
 		</SlotContextProvider>
 	);
