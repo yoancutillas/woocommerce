@@ -422,3 +422,5 @@ class TaskList {
 		);
 	}
 }
+
+require_once('TasklistOverrideDemo.php');
