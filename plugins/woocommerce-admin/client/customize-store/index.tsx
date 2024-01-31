@@ -330,6 +330,10 @@ export const customizeStoreStateMachineDefinition = createMachine( {
 			states: {
 				preDesignWithoutAi: {
 					always: {
+						cond: {
+							type: 'log',
+							step: 'designWithoutAi',
+						},
 						target: 'designWithoutAi',
 					},
 				},
@@ -365,8 +369,17 @@ export const customizeStoreStateMachineDefinition = createMachine( {
 			},
 		},
 		assemblerHub: {
-			initial: 'fetchActiveThemeHasMods',
+			initial: 'preFetchActiveThemeHasMods',
 			states: {
+				preFetchActiveThemeHasMods: {
+					always: {
+						cond: {
+							type: 'log',
+							step: 'assemblerHub',
+						},
+						target: 'fetchActiveThemeHasMods',
+					},
+				},
 				fetchActiveThemeHasMods: {
 					invoke: {
 						src: 'fetchIntroData',
@@ -531,6 +544,10 @@ export const CustomizeStoreController = ( {
 				...actionOverrides,
 			},
 			guards: {
+				log: ( _ctx, _evt, { cond }: { cond: unknown } ) => {
+					console.log( cond, _ctx.intro.activeThemeHasMods );
+					return true;
+				},
 				hasStepInUrl: ( _ctx, _evt, { cond }: { cond: unknown } ) => {
 					const { path = '' } = getQuery() as { path: string };
 					const pathFragments = path.split( '/' );
