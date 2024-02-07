@@ -44,10 +44,18 @@ class InitTest extends WC_Unit_Test_Case {
 							'title'   => __( 'Get the basics', 'woocommerce' ),
 							'plugins' => array(
 								array(
-									'id'         => 'mock-extension',
+									'id'         => 'mock-extension-1',
 									'is_visible' => (object) array(
 										'type'      => 'base_location_country',
 										'value'     => 'ZA',
+										'operation' => '=',
+									),
+								),
+								array(
+									'id'         => 'mock-extension-2',
+									'is_visible' => (object) array(
+										'type'      => 'base_location_country',
+										'value'     => 'US',
 										'operation' => '=',
 									),
 								),
@@ -107,14 +115,6 @@ class InitTest extends WC_Unit_Test_Case {
 		$this->assertCount( 2, $specs );
 	}
 
-	/**
-	 * Test that non-matching extensions are not shown.
-	 */
-	public function test_non_matching_extensions() {
-		update_option( 'woocommerce_default_country', 'US' );
-		$bundles = RemoteFreeExtensions::get_extensions();
-		$this->assertCount( 0, $bundles[0]['plugins'] );
-	}
 
 	/**
 	 * Test that matched suggestions are shown.
@@ -122,7 +122,8 @@ class InitTest extends WC_Unit_Test_Case {
 	public function test_matching_suggestions() {
 		update_option( 'woocommerce_default_country', 'ZA' );
 		$bundles = RemoteFreeExtensions::get_extensions();
-		$this->assertEquals( 'mock-extension', $bundles[0]['plugins'][0]->id );
+		$this->assertEquals( 'mock-extension-1', $bundles[0]['plugins'][0]->id );
+		$this->assertCount( 1, $bundles[0]['plugins'] );
 	}
 
 	/**

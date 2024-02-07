@@ -60,10 +60,18 @@ class WC_Admin_Tests_PaymentGatewaySuggestions_Init extends WC_Unit_Test_Case {
 		return array(
 			'en_US' => array(
 				array(
-					'id'         => 'mock-gateway',
+					'id'         => 'mock-gateway-1',
 					'is_visible' => (object) array(
 						'type'      => 'base_location_country',
 						'value'     => 'ZA',
+						'operation' => '=',
+					),
+				),
+				array(
+					'id'         => 'mock-gateway-2',
+					'is_visible' => (object) array(
+						'type'      => 'base_location_country',
+						'value'     => 'US',
 						'operation' => '=',
 					),
 				),
@@ -112,27 +120,29 @@ class WC_Admin_Tests_PaymentGatewaySuggestions_Init extends WC_Unit_Test_Case {
 	/**
 	 * Test that non-matched suggestions are not shown.
 	 */
-	public function test_non_matching_suggestions() {
+	public function test_matching_suggestions_us() {
 		update_option( 'woocommerce_default_country', 'US' );
 		set_transient(
 			'woocommerce_admin_' . PaymentGatewaySuggestionsDataSourcePoller::ID . '_specs',
 			$this->get_mock_specs()
 		);
 		$suggestions = PaymentGatewaySuggestions::get_suggestions();
-		$this->assertCount( 0, $suggestions );
+		$this->assertCount( 1, $suggestions );
+		$this->assertEquals( 'mock-gateway-2', $suggestions[0]->id );
 	}
 
 	/**
 	 * Test that matched suggestions are shown.
 	 */
-	public function test_matching_suggestions() {
+	public function test_matching_suggestions_za() {
 		update_option( 'woocommerce_default_country', 'ZA' );
 		set_transient(
 			'woocommerce_admin_' . PaymentGatewaySuggestionsDataSourcePoller::ID . '_specs',
 			$this->get_mock_specs()
 		);
 		$suggestions = PaymentGatewaySuggestions::get_suggestions();
-		$this->assertEquals( 'mock-gateway', $suggestions[0]->id );
+		$this->assertCount( 1, $suggestions );
+		$this->assertEquals( 'mock-gateway-1', $suggestions[0]->id );
 	}
 
 	/**
