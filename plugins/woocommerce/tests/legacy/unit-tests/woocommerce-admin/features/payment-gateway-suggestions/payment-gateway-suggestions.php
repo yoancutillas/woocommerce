@@ -9,6 +9,7 @@ use Automattic\WooCommerce\Admin\DataSourcePoller;
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\Init as PaymentGatewaySuggestions;
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\DefaultPaymentGateways;
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\PaymentGatewaySuggestionsDataSourcePoller;
+use Automattic\WooCommerce\Admin\RemoteInboxNotifications\PassRuleProcessor;
 
 /**
  * class WC_Admin_Tests_PaymentGatewaySuggestions_Init
@@ -163,6 +164,27 @@ class WC_Admin_Tests_PaymentGatewaySuggestions_Init extends WC_Unit_Test_Case {
 
 		$suggestions = PaymentGatewaySuggestions::get_suggestions();
 		$this->assertEquals( 'default-gateway', $suggestions[0]->id );
+	}
+
+	/**
+	 * Test that empty suggestions are replaced with defaults.
+	 */
+	public function test_empty_suggestions() {
+		set_transient(
+			'woocommerce_admin_' . PaymentGatewaySuggestionsDataSourcePoller::ID . '_specs',
+			array(
+				'en_US' => array(),
+			)
+		);
+
+		$suggestions       = PaymentGatewaySuggestions::get_suggestions();
+		$stored_transients = get_transient( 'woocommerce_admin_' . PaymentGatewaySuggestionsDataSourcePoller::ID . '_specs' );
+
+		$this->assertEquals( 'bacs', $suggestions[0]->id );
+		$this->assertEquals( count( $stored_transients['en_US'] ), count( DefaultPaymentGateways::get_all() ) );
+
+		$expires = (int) get_transient( '_transient_timeout_woocommerce_admin_' . PaymentGatewaySuggestionsDataSourcePoller::ID . '_specs' );
+		$this->assertTrue( ( $expires - time() ) < 3 * HOUR_IN_SECONDS );
 	}
 
 	/**
