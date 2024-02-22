@@ -27,6 +27,7 @@ use Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore;
 use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Register as Download_Directories;
 use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Synchronize as Download_Directories_Sync;
+use Automattic\WooCommerce\Internal\Utilities\PluginInstaller;
 use Automattic\WooCommerce\Utilities\StringUtil;
 
 /**
@@ -2666,4 +2667,53 @@ function wc_update_870_prevent_listing_of_transient_files_directory() {
 	\WP_Filesystem();
 	$wp_filesystem->put_contents( $default_transient_files_dir . '/.htaccess', 'deny from all' );
 	$wp_filesystem->put_contents( $default_transient_files_dir . '/index.html', '' );
+}
+
+function wc_update_870_install_thing() {
+	$plugin_name = 'woocommerce-legacy-rest-api/woocommerce-legacy-rest-api.php';
+
+	if(file_exists (WP_PLUGIN_DIR . '/' . $plugin_name)) {
+		return;
+	}
+
+	$uses_legacy_rest_api = fn() =>
+		array_filter(wp_get_active_and_valid_plugins(), fn($plugin) => substr_compare($plugin, '/woocommerce.php', -strlen('/woocommerce.php')) === 0) &&
+		('yes' === get_option('woocommerce_api_enabled') ||
+		wc_get_container()->get(Automattic\WooCommerce\Internal\Utilities\WebhookUtil::class)->get_legacy_webhooks_count() > 0);
+
+	if(is_multisite()) {
+		$sites = get_sites();
+		$sites_that_need_legacy_rest_api_plugin = [];
+		foreach($sites as $site) {
+			switch_to_blog($site->blog_id);
+			if($uses_legacy_rest_api()) {
+				$sites_that_need_legacy_rest_api_plugin[] = $site->blog_id;
+			}
+			restore_current_blog();
+		}
+		if(empty($sites_that_need_legacy_rest_api_plugin)) {
+			return;
+		}
+	} else if(!$uses_legacy_rest_api()) {
+		return;
+	}
+
+	$installer = wc_get_container()->get(PluginInstaller::class);
+	if(is_null($installer->get_installed_plugin_info('woocommerce-legacy-rest-api/woocommerce-legacy-rest-api.php'))) {
+		wc_get_container()->get(PluginInstaller::class)->install_plugin('https://downloads.wordpress.org/plugin/woocommerce-legacy-rest-api.1.0.1.zip', ['plugin_name' => $plugin_name]);
+	}
+
+	//TODO: Check if plugin wasn't installed, show notice if so
+
+	if(empty($sites)) {
+		activate_plugin($plugin_name);
+	} else {
+		foreach($sites_that_need_legacy_rest_api_plugin as $site_id) {
+			switch_to_blog($site_id);
+			activate_plugin($plugin_name);
+			restore_current_blog();
+		}
+	}
+
+	//TODO: Add confirmation notices
 }
