@@ -165,6 +165,24 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 9.0.0 2024-XX-XX =
+= 9.0.0 2024-06-11 =
+
+**WooCommerce**
+
+* Fix - Make REST order queries involving 'customer' field compatible with HPOS in v2 API. [#46878](https://github.com/woocommerce/woocommerce/pull/46878)
+* Add - Added the `wc_product_pre_has_unique_sku` filter hook to allow SKU uniqueness to be determined externally [#46763](https://github.com/woocommerce/woocommerce/pull/46763)
+* Update - Ensure the woocommerce_format_log_entry filter hook still has access to the log source value [#46851](https://github.com/woocommerce/woocommerce/pull/46851)
+* Update - Reverts auto-injecting specific Woo Blocks in every block theme and restores only auto-injecting in themes found in the allow list. [#46935](https://github.com/woocommerce/woocommerce/pull/46935)
+* Update - Toggle LYS feature flag on for post-8.9 [#46853](https://github.com/woocommerce/woocommerce/pull/46853)
+* Update - Update Octokit from 2.1.0 to 3.1.2 and updated variable names [#42891](https://github.com/woocommerce/woocommerce/pull/42891)
+* Update - Woocommerce: update code to data TS changes [#46907](https://github.com/woocommerce/woocommerce/pull/46907)
+* Dev - Add help text under "Include downloads" toggle #46752 [#46752](https://github.com/woocommerce/woocommerce/pull/46752)
+* Dev - Block E2E: Eliminate side effects through improved test isolation [#46125](https://github.com/woocommerce/woocommerce/pull/46125)
+* Dev - E2E tests: fix cleanup of created test pages and migrate to using fixtures [#46944](https://github.com/woocommerce/woocommerce/pull/46944)
+* Dev - E2E tests: more fixes for tests with Gutenberg active [#46861](https://github.com/woocommerce/woocommerce/pull/46861)
+* Dev - Update fast-xml-parser from 4.2.4 to 4.2.5 [#41982](https://github.com/woocommerce/woocommerce/pull/41982)
+* Tweak - Update the order summary on Cart & Checkout with some minor visual changes [#45767](https://github.com/woocommerce/woocommerce/pull/45767)
+* Performance - Add experimental support for FTS indexes in HPOS. Additionally, revert existing HPOS search queries to use post like structure. [#46130](https://github.com/woocommerce/woocommerce/pull/46130)
+
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
