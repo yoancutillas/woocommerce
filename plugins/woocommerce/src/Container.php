@@ -3,9 +3,12 @@
  * Container class file.
  */
 
+declare( strict_types=1 );
+
 namespace Automattic\WooCommerce;
 
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\CostOfGoodsSoldServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AssignDefaultCategoryServiceProvider;
@@ -30,6 +33,9 @@ use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\Restoc
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\UtilsClassesServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\BatchProcessingServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LayoutTemplatesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ComingSoonServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StatsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ImportExportServiceProvider;
 
 /**
  * PSR11 compliant dependency injection container for WooCommerce.
@@ -79,6 +85,10 @@ final class Container {
 		LayoutTemplatesServiceProvider::class,
 		LoggingServiceProvider::class,
 		EnginesServiceProvider::class,
+		ComingSoonServiceProvider::class,
+		StatsServiceProvider::class,
+		ImportExportServiceProvider::class,
+		CostOfGoodsSoldServiceProvider::class,
 	);
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { getSetting } from '@woocommerce/settings';
 import {
 	PlaceOrderButton,
@@ -23,13 +23,16 @@ const Block = ( {
 	showReturnToCart,
 	className,
 	placeOrderButtonLabel,
+	returnToCartButtonLabel,
 }: {
 	cartPageId: number;
 	showReturnToCart: boolean;
 	className?: string;
 	placeOrderButtonLabel: string;
+	returnToCartButtonLabel: string;
 } ): JSX.Element => {
 	const { paymentMethodButtonLabel } = useCheckoutSubmit();
+
 	const label = applyCheckoutFilter( {
 		filterName: 'placeOrderButtonLabel',
 		defaultValue:
@@ -39,17 +42,17 @@ const Block = ( {
 	} );
 
 	return (
-		<div
-			className={ classnames( 'wc-block-checkout__actions', className ) }
-		>
+		<div className={ clsx( 'wc-block-checkout__actions', className ) }>
 			<StoreNoticesContainer
 				context={ noticeContexts.CHECKOUT_ACTIONS }
 			/>
 			<div className="wc-block-checkout__actions_row">
 				{ showReturnToCart && (
 					<ReturnToCartButton
-						link={ getSetting( 'page-' + cartPageId, false ) }
-					/>
+						href={ getSetting( 'page-' + cartPageId, false ) }
+					>
+						{ returnToCartButtonLabel }
+					</ReturnToCartButton>
 				) }
 				<PlaceOrderButton
 					label={ label }

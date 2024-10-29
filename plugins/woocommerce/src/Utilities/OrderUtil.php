@@ -196,8 +196,8 @@ final class OrderUtil {
 	public static function get_count_for_type( $order_type ) {
 		global $wpdb;
 
-		$cache_key        = 'order-count-' . $order_type;
-		$count_per_status = wp_cache_get( $cache_key, 'orders' );
+		$cache_key        = \WC_Cache_Helper::get_cache_prefix( 'orders' ) . 'order-count-' . $order_type;
+		$count_per_status = wp_cache_get( $cache_key, 'counts' );
 
 		if ( false === $count_per_status ) {
 			if ( self::custom_orders_table_usage_is_enabled() ) {
@@ -222,10 +222,25 @@ final class OrderUtil {
 				$count_per_status
 			);
 
-			wp_cache_set( $cache_key, $count_per_status, 'orders' );
+			wp_cache_set( $cache_key, $count_per_status, 'counts' );
 		}
 
 		return $count_per_status;
 	}
 
+	/**
+	 * Removes the 'wc-' prefix from status.
+	 *
+	 * @param string $status The status to remove the prefix from.
+	 *
+	 * @return string The status without the prefix.
+	 * @since 9.2.0
+	 */
+	public static function remove_status_prefix( string $status ): string {
+		if ( strpos( $status, 'wc-' ) === 0 ) {
+			$status = substr( $status, 3 );
+		}
+
+		return $status;
+	}
 }

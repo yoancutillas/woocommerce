@@ -30,7 +30,7 @@ describe( 'InboxNoteCard', () => {
 		id: 1,
 		name: 'wc-admin-wc-helper-connection',
 		type: 'info',
-		title: 'Connect to Woo.com',
+		title: 'Connect to WooCommerce.com',
 		content: 'Connect to get important product notifications and updates.',
 		status: 'unactioned',
 		date_created: '2020-05-10T16:57:31',
@@ -74,15 +74,6 @@ describe( 'InboxNoteCard', () => {
 			<InboxNoteCard key={ note.id } note={ note } />
 		);
 		expect( queryByText( 'Dismiss' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should render a notification type banner', () => {
-		const bannerNote = { ...note, layout: 'banner' };
-		const { container } = render(
-			<InboxNoteCard key={ bannerNote.id } note={ bannerNote } />
-		);
-		const listNoteWithBanner = container.querySelector( '.banner' );
-		expect( listNoteWithBanner ).not.toBeNull();
 	} );
 
 	it( 'should render a notification type thumbnail', () => {

@@ -2,6 +2,7 @@
 
 namespace Automattic\WooCommerce\Blocks\Templates;
 
+use Automattic\WooCommerce\Blocks\Templates\ArchiveProductTemplatesCompatibility;
 use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
 
 /**
@@ -23,7 +24,7 @@ class ProductCatalogTemplate extends AbstractTemplate {
 	 */
 	public function init() {
 		add_action( 'template_redirect', array( $this, 'render_block_template' ) );
-		add_filter( 'post_type_archive_title', array( $this, 'update_product_archive_title' ), 10, 2 );
+		add_filter( 'current_theme_supports-block-templates', array( $this, 'remove_block_template_support_for_shop_page' ) );
 	}
 
 	/**
@@ -49,35 +50,42 @@ class ProductCatalogTemplate extends AbstractTemplate {
 	 */
 	public function render_block_template() {
 		if ( ! is_embed() && ( is_post_type_archive( 'product' ) || is_page( wc_get_page_id( 'shop' ) ) ) ) {
+			$compatibility_layer = new ArchiveProductTemplatesCompatibility();
+			$compatibility_layer->init();
+
 			$templates = get_block_templates( array( 'slug__in' => array( self::SLUG ) ) );
 
 			if ( isset( $templates[0] ) && BlockTemplateUtils::template_has_legacy_template_block( $templates[0] ) ) {
 				add_filter( 'woocommerce_disable_compatibility_layer', '__return_true' );
 			}
 
-			if ( ! BlockTemplateUtils::theme_has_template( self::SLUG ) ) {
-				add_filter( 'woocommerce_has_block_template', '__return_true', 10, 0 );
-			}
+			add_filter( 'woocommerce_has_block_template', '__return_true', 10, 0 );
 		}
 	}
 
 	/**
-	 * Update the product archive title to "Shop".
+	 * Remove the template panel from the Sidebar of the Shop page because
+	 * the Site Editor handles it.
 	 *
-	 * @param string $post_type_name Post type 'name' label.
-	 * @param string $post_type      Post type.
+	 * @see https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/6278
 	 *
-	 * @return string
+	 * @param bool $is_support Whether the active theme supports block templates.
+	 *
+	 * @return bool
 	 */
-	public function update_product_archive_title( $post_type_name, $post_type ) {
+	public function remove_block_template_support_for_shop_page( $is_support ) {
+		global $pagenow, $post;
+
 		if (
-			function_exists( 'is_shop' ) &&
-			is_shop() &&
-			'product' === $post_type
+			is_admin() &&
+			'post.php' === $pagenow &&
+			function_exists( 'wc_get_page_id' ) &&
+			is_a( $post, 'WP_Post' ) &&
+			wc_get_page_id( 'shop' ) === $post->ID
 		) {
-			return __( 'Shop', 'woocommerce' );
+			return false;
 		}
 
-		return $post_type_name;
+		return $is_support;
 	}
 }

@@ -7,8 +7,6 @@
 
 namespace Automattic\WooCommerce\Admin\API;
 
-use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingThemes as Themes;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -249,10 +247,14 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 			);
 		}
 
+		$in_app_purchase_params               = \WC_Admin_Addons::get_in_app_purchase_url_params();
+		$in_app_purchase_params['wccom-back'] = rawurlencode( '/wp-admin/admin.php?page=wc-admin&path=/customize-store' );
+
 		$core_themes = array(
 			array(
 				'name'           => 'Twenty Twenty-Four',
-				'price'          => 'Free',
+				'price'          => __( 'Free', 'woocommerce' ),
+				'is_free'        => true,
 				'color_palettes' => array(
 					array(
 						'title'     => 'Black and white',
@@ -282,7 +284,9 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 			),
 			array(
 				'name'           => 'Highline',
-				'price'          => '$79/year',
+				/* translators: %d: price */
+				'price'          => sprintf( __( '$%d/year', 'woocommerce' ), 79 ),
+				'is_free'        => false,
 				'color_palettes' => array(
 					array(
 						'title'     => 'Primary',
@@ -307,12 +311,14 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 				),
 				'total_palettes' => 9,
 				'slug'           => 'highline',
-				'thumbnail_url'  => 'https://woo.com/wp-content/uploads/2023/12/Featured-image-538x403-1.png',
-				'link_url'       => 'https://woo.com/products/highline/',
+				'thumbnail_url'  => 'https://woocommerce.com/wp-content/uploads/2023/12/Featured-image-538x403-1.png',
+				'link_url'       => add_query_arg( $in_app_purchase_params, 'https://woocommerce.com/products/highline/' ),
 			),
 			array(
 				'name'           => 'Luminate',
-				'price'          => '$79/year',
+				/* translators: %d: price */
+				'price'          => sprintf( __( '$%d/year', 'woocommerce' ), 79 ),
+				'is_free'        => false,
 				'color_palettes' => array(
 					array(
 						'title'     => 'Primary',
@@ -337,38 +343,40 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 				),
 				'total_palettes' => 5,
 				'slug'           => 'luminate',
-				'thumbnail_url'  => 'https://woo.com/wp-content/uploads/2022/07/Featured-image-538x403-2.png',
-				'link_url'       => 'https://woo.com/products/luminate/',
+				'thumbnail_url'  => 'https://woocommerce.com/wp-content/uploads/2022/07/Featured-image-538x403-2.png',
+				'link_url'       => add_query_arg( $in_app_purchase_params, 'https://woocommerce.com/products/luminate/' ),
 			),
 			array(
-				'name'           => 'Nokul',
-				'price'          => '$79/year',
+				'name'           => 'Gizmo',
+				/* translators: %d: price */
+				'price'          => sprintf( __( '$%d/year', 'woocommerce' ), 79 ),
+				'is_free'        => false,
 				'color_palettes' => array(
 					array(
-						'title'     => 'Foreground and background',
-						'primary'   => '#000000',
-						'secondary' => '#f1eee2',
+						'title'     => 'Primary',
+						'primary'   => '#ff5833',
+						'secondary' => '#ff5833',
 					),
 					array(
-						'title'     => 'Foreground and secondary',
-						'primary'   => '#000000',
-						'secondary' => '#999999',
+						'title'     => 'Foreground',
+						'primary'   => '#111111',
+						'secondary' => '#111111',
 					),
 					array(
-						'title'     => 'Foreground and accent',
-						'primary'   => '#000000',
-						'secondary' => '#d82f16',
+						'title'     => 'Background',
+						'primary'   => '#FFFFFF',
+						'secondary' => '#FFFFFF',
 					),
 					array(
-						'title'     => 'Primary and background',
-						'primary'   => '#d9d0bf',
-						'secondary' => '#f1eee2',
+						'title'     => 'Base',
+						'primary'   => '#595959',
+						'secondary' => '#595959',
 					),
 				),
-				'total_palettes' => 6,
-				'slug'           => 'nokul',
-				'thumbnail_url'  => 'https://woo.com/wp-content/uploads/2022/11/Product-logo.jpg',
-				'link_url'       => 'https://woo.com/products/nokul/',
+				'total_palettes' => 10,
+				'slug'           => 'gizmo',
+				'thumbnail_url'  => 'https://woocommerce.com/wp-content/uploads/2022/11/gizmo-regular-card-product-logo.jpg?w=900',
+				'link_url'       => add_query_arg( $in_app_purchase_params, 'https://woocommerce.com/products/gizmo/' ),
 			),
 		);
 
@@ -377,7 +385,8 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 		$default_themes = array(
 			array(
 				'name'           => 'Tsubaki',
-				'price'          => 'Free',
+				'price'          => __( 'Free', 'woocommerce' ),
+				'is_free'        => true,
 				'color_palettes' => array(),
 				'total_palettes' => 0,
 				'slug'           => 'tsubaki',
@@ -386,7 +395,8 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 			),
 			array(
 				'name'           => 'Tazza',
-				'price'          => 'Free',
+				'price'          => __( 'Free', 'woocommerce' ),
+				'is_free'        => true,
 				'color_palettes' => array(),
 				'total_palettes' => 0,
 				'slug'           => 'tazza',
@@ -395,7 +405,8 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 			),
 			array(
 				'name'           => 'Amulet',
-				'price'          => 'Free',
+				'price'          => __( 'Free', 'woocommerce' ),
+				'is_free'        => true,
 				'color_palettes' => array(
 					array(
 						'title'     => 'Default',
@@ -425,7 +436,8 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 			),
 			array(
 				'name'           => 'Zaino',
-				'price'          => 'Free',
+				'price'          => __( 'Free', 'woocommerce' ),
+				'is_free'        => true,
 				'color_palettes' => array(
 					array(
 						'title'     => 'Default',
@@ -574,6 +586,10 @@ class OnboardingThemes extends \WC_REST_Data_Controller {
 							'price'          => array(
 								'type'        => 'string',
 								'description' => 'Price',
+							),
+							'is_free'        => array(
+								'type'        => 'boolean',
+								'description' => 'Whether theme is free',
 							),
 							'is_active'      => array(
 								'type'        => 'boolean',

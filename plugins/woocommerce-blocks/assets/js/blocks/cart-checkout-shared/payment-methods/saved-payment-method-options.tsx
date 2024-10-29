@@ -36,7 +36,7 @@ const getCcOrEcheckLabel = ( {
 	return sprintf(
 		/* translators: %1$s is referring to the payment method brand, %2$s is referring to the last 4 digits of the payment card, %3$s is referring to the expiry date.  */
 		__( '%1$s ending in %2$s (expires %3$s)', 'woocommerce' ),
-		method.brand,
+		method?.display_brand ?? method?.networks?.preferred ?? method.brand,
 		method.last4,
 		expires
 	);
@@ -69,15 +69,20 @@ const getDefaultLabel = ( {
 };
 
 const SavedPaymentMethodOptions = () => {
-	const { activeSavedToken, activePaymentMethod, savedPaymentMethods } =
-		useSelect( ( select ) => {
-			const store = select( PAYMENT_STORE_KEY );
-			return {
-				activeSavedToken: store.getActiveSavedToken(),
-				activePaymentMethod: store.getActivePaymentMethod(),
-				savedPaymentMethods: store.getSavedPaymentMethods(),
-			};
-		} );
+	const {
+		activeSavedToken,
+		activePaymentMethod,
+		savedPaymentMethods,
+		paymentMethodsInitialized,
+	} = useSelect( ( select ) => {
+		const store = select( PAYMENT_STORE_KEY );
+		return {
+			activeSavedToken: store.getActiveSavedToken(),
+			activePaymentMethod: store.getActivePaymentMethod(),
+			savedPaymentMethods: store.getSavedPaymentMethods(),
+			paymentMethodsInitialized: store.paymentMethodsInitialized(),
+		};
+	} );
 	const { __internalSetActivePaymentMethod } =
 		useDispatch( PAYMENT_STORE_KEY );
 	const canMakePaymentArg = getCanMakePaymentArg();
@@ -153,6 +158,7 @@ const SavedPaymentMethodOptions = () => {
 		dispatchCheckoutEvent,
 		canMakePaymentArg,
 	] );
+
 	const savedPaymentMethodHandler =
 		!! activeSavedToken &&
 		paymentMethods[ activePaymentMethod ] &&
@@ -167,11 +173,16 @@ const SavedPaymentMethodOptions = () => {
 			  )
 			: null;
 
+	const selected = paymentMethodsInitialized
+		? activeSavedToken
+		: options[ 0 ].value;
+
 	return options.length > 0 ? (
 		<>
 			<RadioControl
+				highlightChecked={ true }
 				id={ 'wc-payment-method-saved-tokens' }
-				selected={ activeSavedToken }
+				selected={ selected }
 				options={ options }
 				onChange={ () => void 0 }
 			/>

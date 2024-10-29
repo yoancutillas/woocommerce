@@ -11,6 +11,7 @@
  */
 
 use Automattic\WooCommerce\Caches\OrderCache;
+use Automattic\WooCommerce\Internal\Orders\PaymentInfo;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\ArrayUtil;
 use Automattic\WooCommerce\Utilities\NumberUtil;
@@ -592,6 +593,15 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 		);
 	}
 
+	/**
+	 * Get info about the card used for payment in the order.
+	 *
+	 * @return array
+	 */
+	public function get_payment_card_info() {
+		return PaymentInfo::get_card_info( $this );
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Setters
@@ -626,7 +636,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	 */
 	public function set_status( $new_status ) {
 		$old_status = $this->get_status();
-		$new_status = 'wc-' === substr( $new_status, 0, 3 ) ? substr( $new_status, 3 ) : $new_status;
+		$new_status = OrderUtil::remove_status_prefix( $new_status );
 
 		$status_exceptions = array( 'auto-draft', 'trash' );
 
@@ -1413,7 +1423,7 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	private function get_temporary_coupon( WC_Order_Item_Coupon $coupon_item ): WC_Coupon {
 		$coupon_object = new WC_Coupon();
 
-		// Since WooCommerce 8.7 a succint 'coupon_info' line item meta entry is created
+		// Since WooCommerce 8.7 a succinct 'coupon_info' line item meta entry is created
 		// whenever a coupon is applied to an order. Previously a more verbose 'coupon_data' was created.
 
 		$coupon_info = $coupon_item->get_meta( 'coupon_info', true );

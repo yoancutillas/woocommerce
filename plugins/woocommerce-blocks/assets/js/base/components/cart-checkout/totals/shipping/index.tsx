@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { useStoreCart } from '@woocommerce/base-context/hooks';
@@ -78,35 +78,52 @@ export const TotalsShipping = ( {
 				.flatMap( ( rate ) => rate.name );
 		}
 	);
-	const addressComplete = isAddressComplete( shippingAddress );
+	const addressComplete = isAddressComplete( shippingAddress, [
+		'state',
+		'country',
+		'postcode',
+		'city',
+	] );
 	const shippingMethodsMissing = areShippingMethodsMissing(
 		hasRates,
 		prefersCollection,
 		shippingRates
 	);
 
+	const valueToDisplay =
+		totalShippingValue === 0 ? (
+			<strong>{ __( 'Free', 'woocommerce' ) }</strong>
+		) : (
+			totalShippingValue
+		);
+	const shippingCalculatorID = 'shipping-calculator-form-wrapper';
+
 	return (
 		<div
-			className={ classnames(
+			className={ clsx(
 				'wc-block-components-totals-shipping',
 				className
 			) }
 		>
 			<TotalsItem
-				label={ __( 'Shipping', 'woocommerce' ) }
+				label={ __( 'Delivery', 'woocommerce' ) }
 				value={
 					! shippingMethodsMissing && cartHasCalculatedShipping
 						? // if address is not complete, display the link to add an address.
-						  totalShippingValue
+						  valueToDisplay
 						: ( ! addressComplete || isCheckout ) && (
 								<ShippingPlaceholder
 									showCalculator={ showCalculator }
 									isCheckout={ isCheckout }
+									addressProvided={ addressComplete }
 									isShippingCalculatorOpen={
 										isShippingCalculatorOpen
 									}
 									setIsShippingCalculatorOpen={
 										setIsShippingCalculatorOpen
+									}
+									shippingCalculatorID={
+										shippingCalculatorID
 									}
 								/>
 						  )
@@ -128,6 +145,7 @@ export const TotalsShipping = ( {
 								setIsShippingCalculatorOpen={
 									setIsShippingCalculatorOpen
 								}
+								shippingCalculatorID={ shippingCalculatorID }
 							/>
 						</>
 					) : null
@@ -142,6 +160,7 @@ export const TotalsShipping = ( {
 					onCancel={ () => {
 						setIsShippingCalculatorOpen( false );
 					} }
+					shippingCalculatorID={ shippingCalculatorID }
 				/>
 			) }
 			{ showRateSelector &&
@@ -152,6 +171,7 @@ export const TotalsShipping = ( {
 						shippingRates={ shippingRates }
 						isLoadingRates={ isLoadingRates }
 						isAddressComplete={ addressComplete }
+						shippingAddress={ shippingAddress }
 					/>
 				) }
 		</div>

@@ -3,11 +3,18 @@
  */
 import prepareFormFields from '@woocommerce/base-components/cart-checkout/form/prepare-form-fields';
 import { isEmail } from '@wordpress/url';
-import type {
-	CartResponseBillingAddress,
-	CartResponseShippingAddress,
+import {
+	isString,
+	type CartResponseBillingAddress,
+	type CartResponseShippingAddress,
+	isObject,
 } from '@woocommerce/types';
-import { ShippingAddress, BillingAddress } from '@woocommerce/settings';
+import {
+	ShippingAddress,
+	BillingAddress,
+	CoreAddress,
+	KeyedFormField,
+} from '@woocommerce/settings';
 import { decodeEntities } from '@wordpress/html-entities';
 import {
 	SHIPPING_COUNTRIES,
@@ -149,14 +156,13 @@ export const formatShippingAddress = (
 	if ( Object.values( address ).length === 0 ) {
 		return null;
 	}
-	const formattedCountry =
-		typeof SHIPPING_COUNTRIES[ address.country ] === 'string'
-			? decodeEntities( SHIPPING_COUNTRIES[ address.country ] )
-			: '';
+	const formattedCountry = isString( SHIPPING_COUNTRIES[ address.country ] )
+		? decodeEntities( SHIPPING_COUNTRIES[ address.country ] )
+		: '';
 
 	const formattedState =
-		typeof SHIPPING_STATES[ address.country ] === 'object' &&
-		typeof SHIPPING_STATES[ address.country ][ address.state ] === 'string'
+		isObject( SHIPPING_STATES[ address.country ] ) &&
+		isString( SHIPPING_STATES[ address.country ][ address.state ] )
 			? decodeEntities(
 					SHIPPING_STATES[ address.country ][ address.state ]
 			  )
@@ -180,9 +186,15 @@ export const formatShippingAddress = (
 
 /**
  * Checks that all required fields in an address are completed based on the settings in countryLocale.
+ *
+ * @param {Object} address     The address to check.
+ * @param {Array}  keysToCheck Optional override to include only specific keys for checking.
+ *                             If there are other required fields in the address, but not specified in this arg then
+ *                             they will be ignored.
  */
 export const isAddressComplete = (
-	address: ShippingAddress | BillingAddress
+	address: ShippingAddress | BillingAddress,
+	keysToCheck: ( keyof CoreAddress )[] = []
 ): boolean => {
 	if ( ! address.country ) {
 		return false;
@@ -193,7 +205,17 @@ export const isAddressComplete = (
 		address.country
 	);
 
-	return addressForm.every(
+	// Filter the address form so only fields from the keysToCheck arg remain, if that arg is empty, then default to the
+	// full address form.
+	const filteredAddressForm =
+		keysToCheck.length > 0
+			? ( Object.values( addressForm ) as KeyedFormField[] ).filter(
+					( { key } ) =>
+						keysToCheck.includes( key as keyof CoreAddress )
+			  )
+			: addressForm;
+
+	return filteredAddressForm.every(
 		( { key = '', hidden = false, required = false } ) => {
 			if ( hidden || ! required ) {
 				return true;

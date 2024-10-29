@@ -8,18 +8,26 @@ import {
 	getElement,
 	getContext,
 } from '@woocommerce/interactivity';
+import {
+	triggerProductListRenderedEvent,
+	triggerViewedProductEvent,
+} from '@woocommerce/base-utils';
 
 /**
  * Internal dependencies
  */
+import { CoreCollectionNames } from './types';
 import './style.scss';
 
 export type ProductCollectionStoreContext = {
+	// Available on the <li/> product element and deeper
+	productId?: number;
 	isPrefetchNextOrPreviousLink: boolean;
 	animation: 'start' | 'finish';
 	accessibilityMessage: string;
 	accessibilityLoadingMessage: string;
 	accessibilityLoadedMessage: string;
+	collection: CoreCollectionNames;
 };
 
 const isValidLink = ( ref: HTMLAnchorElement ) =>
@@ -36,6 +44,13 @@ const isValidEvent = ( event: MouseEvent ) =>
 	! event.altKey && // Download.
 	! event.shiftKey &&
 	! event.defaultPrevented;
+
+const forcePageReload = ( href: string ) => {
+	window.location.assign( href );
+	// It's function called in generator expecting asyncFunc return.
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	return new Promise( () => {} );
+};
 
 /**
  * Ensures the visibility of the first product in the collection.
@@ -93,6 +108,13 @@ const productCollectionStore = {
 			const wcNavigationId = (
 				ref?.closest( '[data-wc-navigation-id]' ) as HTMLDivElement
 			 )?.dataset?.wcNavigationId;
+			const isDisabled = (
+				ref?.closest( '[data-wc-navigation-id]' ) as HTMLDivElement
+			 )?.dataset.wcNavigationDisabled;
+
+			if ( isDisabled ) {
+				yield forcePageReload( ref.href );
+			}
 
 			if ( isValidLink( ref ) && isValidEvent( event ) ) {
 				event.preventDefault();
@@ -122,6 +144,10 @@ const productCollectionStore = {
 				ctx.isPrefetchNextOrPreviousLink = !! ref.href;
 
 				scrollToFirstProductIfNotVisible( wcNavigationId );
+
+				triggerProductListRenderedEvent( {
+					collection: ctx.collection,
+				} );
 			}
 		},
 		/**
@@ -130,8 +156,25 @@ const productCollectionStore = {
 		 */
 		*prefetchOnHover() {
 			const { ref } = getElement();
+
+			const isDisabled = (
+				ref?.closest( '[data-wc-navigation-id]' ) as HTMLDivElement
+			 )?.dataset.wcNavigationDisabled;
+
+			if ( isDisabled ) {
+				return;
+			}
+
 			if ( isValidLink( ref ) ) {
 				yield prefetch( ref.href );
+			}
+		},
+		*viewProduct() {
+			const { collection, productId } =
+				getContext< ProductCollectionStoreContext >();
+
+			if ( productId ) {
+				triggerViewedProductEvent( { collection, productId } );
 			}
 		},
 	},
@@ -141,11 +184,26 @@ const productCollectionStore = {
 		 * Reduces perceived load times for subsequent page navigations.
 		 */
 		*prefetch() {
-			const context = getContext< ProductCollectionStoreContext >();
 			const { ref } = getElement();
+			const isDisabled = (
+				ref?.closest( '[data-wc-navigation-id]' ) as HTMLDivElement
+			 )?.dataset.wcNavigationDisabled;
+
+			if ( isDisabled ) {
+				return;
+			}
+
+			const context = getContext< ProductCollectionStoreContext >();
+
 			if ( context?.isPrefetchNextOrPreviousLink && isValidLink( ref ) ) {
 				yield prefetch( ref.href );
 			}
+		},
+		*onRender() {
+			const { collection } =
+				getContext< ProductCollectionStoreContext >();
+
+			triggerProductListRenderedEvent( { collection } );
 		},
 	},
 };

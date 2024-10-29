@@ -5,7 +5,7 @@ use Automattic\WooCommerce\Blocks\Templates\SingleProductTemplateCompatibility;
 use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
 
 /**
- * SingleProductTemplae class.
+ * SingleProductTemplate class.
  *
  * @internal
  */
@@ -23,7 +23,7 @@ class SingleProductTemplate extends AbstractTemplate {
 	 */
 	public function init() {
 		add_action( 'template_redirect', array( $this, 'render_block_template' ) );
-		add_filter( 'get_block_templates', array( $this, 'update_single_product_content' ), 11, 3 );
+		add_filter( 'get_block_templates', array( $this, 'update_single_product_content' ), 11, 1 );
 	}
 
 	/**
@@ -51,33 +51,50 @@ class SingleProductTemplate extends AbstractTemplate {
 		if ( ! is_embed() && is_singular( 'product' ) ) {
 			global $post;
 
-			$valid_slugs = [ self::SLUG ];
-			if ( 'product' === $post->post_type && $post->post_name ) {
+			$compatibility_layer = new SingleProductTemplateCompatibility();
+			$compatibility_layer->init();
+
+			$valid_slugs         = array( self::SLUG );
+			$single_product_slug = 'product' === $post->post_type && $post->post_name ? 'single-product-' . $post->post_name : '';
+			if ( $single_product_slug ) {
 				$valid_slugs[] = 'single-product-' . $post->post_name;
 			}
 			$templates = get_block_templates( array( 'slug__in' => $valid_slugs ) );
 
-			if ( isset( $templates[0] ) && BlockTemplateUtils::template_has_legacy_template_block( $templates[0] ) ) {
+			if ( count( $templates ) === 0 ) {
+				return;
+			}
+
+			// Use the first template by default.
+			$template = $templates[0];
+
+			// Check if there is a template matching the slug `single-product-{post_name}`.
+			if ( count( $valid_slugs ) > 1 && count( $templates ) > 1 ) {
+				foreach ( $templates as $t ) {
+					if ( $single_product_slug === $t->slug ) {
+						$template = $t;
+						break;
+					}
+				}
+			}
+
+			if ( isset( $template ) && BlockTemplateUtils::template_has_legacy_template_block( $template ) ) {
 				add_filter( 'woocommerce_disable_compatibility_layer', '__return_true' );
 			}
 
-			if ( ! BlockTemplateUtils::theme_has_template( self::SLUG ) ) {
-				add_filter( 'woocommerce_has_block_template', '__return_true', 10, 0 );
-			}
+			add_filter( 'woocommerce_has_block_template', '__return_true', 10, 0 );
 		}
 	}
 
 	/**
 	 * Add the block template objects to be used.
 	 *
-	 * @param array  $query_result Array of template objects.
-	 * @param array  $query Optional. Arguments to retrieve templates.
-	 * @param string $template_type wp_template or wp_template_part.
+	 * @param array $query_result Array of template objects.
 	 * @return array
 	 */
-	public function update_single_product_content( $query_result, $query, $template_type ) {
+	public function update_single_product_content( $query_result ) {
 		$query_result = array_map(
-			function( $template ) {
+			function ( $template ) {
 				if ( str_contains( $template->slug, self::SLUG ) ) {
 					// We don't want to add the compatibility layer on the Editor Side.
 					// The second condition is necessary to not apply the compatibility layer on the REST API. Gutenberg uses the REST API to clone the template.
@@ -86,7 +103,7 @@ class SingleProductTemplate extends AbstractTemplate {
 						// Add the product class to the body. We should move this to a more appropriate place.
 						add_filter(
 							'body_class',
-							function( $classes ) {
+							function ( $classes ) {
 								return array_merge( $classes, wc_get_product_class() );
 							}
 						);
@@ -127,7 +144,7 @@ class SingleProductTemplate extends AbstractTemplate {
 		$single_product_template_blocks = array( 'woocommerce/product-image-gallery', 'woocommerce/product-details', 'woocommerce/add-to-cart-form', 'woocommerce/product-meta', 'woocommerce/product-rating', 'woocommerce/product-price', 'woocommerce/related-products' );
 		return array_reduce(
 			$parsed_blocks,
-			function( $carry, $block ) use ( $single_product_template_blocks ) {
+			function ( $carry, $block ) use ( $single_product_template_blocks ) {
 				if ( in_array( $block['blockName'], $single_product_template_blocks, true ) ) {
 					if ( $carry['is_already_replaced'] ) {
 						return array(

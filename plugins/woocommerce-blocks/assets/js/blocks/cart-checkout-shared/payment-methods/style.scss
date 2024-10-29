@@ -149,6 +149,27 @@
 	pointer-events: all; // Overrides parent disabled component in editor context
 }
 
+.wc-payment-method-options-placeholder {
+	display: block;
+	height: 100px;
+	width: 100%;
+	@include placeholder();
+}
+
+.wc-block-components-show-payment-methods__link {
+	font-weight: normal;
+	background: none;
+	border: none;
+	padding: 0;
+	text-decoration: underline;
+	cursor: pointer;
+	text-align: left;
+
+	&[aria-expanded="true"] {
+		text-decoration: none;
+	}
+}
+
 .is-mobile,
 .is-small {
 	.wc-block-card-elements {
@@ -174,6 +195,7 @@
 .wc-block-checkout__payment-method {
 	.wc-block-components-radio-control__option {
 		padding-left: em($gap-huge);
+		padding-right: em($gap-small);
 
 		&::after {
 			content: none;
@@ -189,30 +211,13 @@
 	.wc-block-components-radio-control__option:first-child,
 	.wc-block-components-radio-control__option:last-child {
 		margin: 0;
+		padding-bottom: em($gap);
+		padding-top: em($gap);
 	}
 
-	.wc-block-components-radio-control__option-checked {
-		font-weight: bold;
-	}
-
-	.wc-block-components-radio-control {
-		border: 1px solid $universal-border-light;
-		border-radius: $universal-border-radius;
-	}
-	.wc-block-components-radio-control-accordion-option,
-	.wc-block-components-radio-control__option {
-		border-top: 1px solid $universal-border-light;
-		&:first-child {
-			border-top: 0;
-		}
-	}
 	.wc-block-components-radio-control-accordion-option
 	.wc-block-components-radio-control__option {
 		border-width: 0;
-	}
-	.wc-block-components-radio-control-accordion-option {
-		padding-bottom: $gap;
-		padding-top: $gap;
 	}
 
 	.wc-block-components-radio-control-accordion-option:first-child::after {
@@ -262,12 +267,12 @@
 		padding-top: 14px;
 		height: 28px;
 	}
-
 }
 .wc-block-components-radio-control-accordion-content {
 	padding: $gap-smaller $gap;
 
-	&:empty {
+	&:empty,
+	&:has(> *:only-child:empty) {
 		display: none;
 	}
 }
